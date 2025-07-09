@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "762595478734",
+    "project_id": "golf-f7f89",
+    "storage_bucket": "golf-f7f89.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:762595478734:android:154f8e484ee894aacd949f",
+        "android_client_info": {
+          "package_name": "com.DefaultCompany.golf"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "762595478734-k3jfu40lcvrn7f0onmkqj5u2jvhaah79.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.DefaultCompany.golf",
+            "certificate_hash": "79b349b42a868547a10e3e8fca25a4a9ef9b17fb"
+          }
+        },
+        {
+          "client_id": "762595478734-t9o1s0t304a7oeaucp01b1j3ruo4m4bt.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDUPn2nbAqU-JQROv4kqH7kYs7ChfEcxlY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "762595478734-t9o1s0t304a7oeaucp01b1j3ruo4m4bt.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,0 +1,135 @@
+﻿using Fusion;
+using Fusion.Sockets;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using System.Linq;
+using UnityEngine;
+
+public abstract class BaseCommonManager : NetworkBehaviour, IStateAuthorityChanged,  INetworkRunnerCallbacks
+{
+    [Header("조이스틱")]
+    [SerializeField] protected Joystick joystick;
+    public Joystick joystickInstance;
+
+    [Header("카운트")]
+    [Networked] public int AddCount { get; set; }
+    [Networked] protected TickTimer gameTimer { get; set; }
+
+    protected int startCount;
+    protected int finishCount;
+
+    protected ChangeDetector _changes;
+
+    // 겜매니저 공통 로직 작성하고 각각 로직은 Onspawned 자식 매니저에서 작성하기
+    [Networked, Capacity(6)]
+    public NetworkDictionary<PlayerRef, Putter> ObjectByRef => default;
+
+    public override void Spawned() //NetworkBehaviour 안에 virtual로 정의되어 잇어서 override (재정의) 했고 이거 자식도 override하면됨
+    {
+        // [플레이어 체크]
+        Runner.AddCallbacks(this);  
+        if (Runner.IsSharedModeMasterClient)
+        {
+            foreach (var player in Runner.ActivePlayers)
+            {
+                OnPlayerJoined(Runner, player);
+            }
+        }
+
+        // [ 조이스틱 ]
+        if (joystick != null && InterfaceManager.instance?.mainCanvas != null) 
+        {
+            joystickInstance = GameObject.Instantiate(joystick, InterfaceManager.instance.mainCanvas.transform);
+        }
+
+        // [ 타이머 ]
+     
+        _changes = GetChangeDetector(ChangeDetector.Source.SimulationState);
+
+    }
+  
+    #region # 실시간 Player In Callback
+    public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
+    {
+        if (!Runner.IsSharedModeMasterClient) return;
+
+        StartCoroutine(WaitAndRegister(player));
+    }
+    private IEnumerator WaitAndRegister(PlayerRef player)
+    {
+        yield return new WaitUntil(() => Runner.TryGetPlayerObject(player, out var obj));
+        var obj = Runner.GetPlayerObject(player);
+        if (obj.TryGetComponent<Putter>(out var putter) && !ObjectByRef.ContainsKey(player))
+        {
+            ObjectByRef.Set(player, putter);
+        }
+    }
+    #endregion
+
+    #region # 실시간 Player Out Callback
+    public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) // 인터페이스의 구현이기 때문에 override x
+    {
+        if (!Object || !Object.HasStateAuthority) //여기에 마스터 클라인지 체크하는 부분으로 하면 안 된다고 함 why? 마스터클라나갈때 남은 클라들 잠시 true되는 문제가 있다고함;
+            return;
+
+        if (ObjectByRef.ContainsKey(player))
+        {
+            ObjectByRef.Remove(player);
+        }
+    }
+    #endregion
+
+
+    #region # 마스터 클라 권한 이전 후 실행로직
+    public virtual void StateAuthorityChanged()
+    {
+        Debug.Log($"🔁 StateAuthorityChanged - Now I Have Authority? {Object.HasStateAuthority} | IsServer: {Runner.IsServer}");
+
+        if (Runner.IsSharedModeMasterClient)
+        {
+            CleanupLeftPlayers();
+        }
+    }
+    void CleanupLeftPlayers()
+    {
+        if (!Object.HasStateAuthority) return;
+
+        List<PlayerRef> toRemove = new();
+
+        foreach (var kvp in ObjectByRef)
+        {
+            if (!Runner.ActivePlayers.Contains(kvp.Key))
+            {
+                toRemove.Add(kvp.Key);
+            }
+        }
+
+        foreach (var pRef in toRemove)
+        {
+            ObjectByRef.Remove(pRef);
+            Debug.Log($"🧹 Cleanup: Removed disconnected player {pRef}");
+        }
+    }
+    #endregion
+
+    #region # INetworkRunnerCallbacks
+    public void OnObjectExitAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }    
+    public void OnObjectEnterAOI(NetworkRunner runner, NetworkObject obj, PlayerRef player) { }
+    public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) { }
+    public void OnDisconnectedFromServer(NetworkRunner runner, NetDisconnectReason reason) { }
+    public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) { }
+    public void OnConnectFailed(NetworkRunner runner, NetAddress remoteAddress, NetConnectFailedReason reason) { }
+    public void OnUserSimulationMessage(NetworkRunner runner, SimulationMessagePtr message) { }
+    public void OnReliableDataReceived(NetworkRunner runner, PlayerRef player, ReliableKey key, ArraySegment<byte> data) { }
+    public void OnReliableDataProgress(NetworkRunner runner, PlayerRef player, ReliableKey key, float progress) { }
+    public void OnInput(NetworkRunner runner, NetworkInput input) { }
+    public void OnInputMissing(NetworkRunner runner, PlayerRef player, NetworkInput input) { }
+    public void OnConnectedToServer(NetworkRunner runner) { }
+    public void OnSessionListUpdated(NetworkRunner runner, List<SessionInfo> sessionList) { }
+    public void OnCustomAuthenticationResponse(NetworkRunner runner, Dictionary<string, object> data) { }
+    public void OnHostMigration(NetworkRunner runner, HostMigrationToken hostMigrationToken) { }
+    public void OnSceneLoadDone(NetworkRunner runner) { }
+    public void OnSceneLoadStart(NetworkRunner runner) { }
+    #endregion
+}
