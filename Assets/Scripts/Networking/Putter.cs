@@ -25,7 +25,6 @@ public class Putter : NetworkBehaviour
 
     [Networked] public int Strokes { get; set; } // 스트록 횟수 누적
     [Networked] public float TimeTaken { get; set; } // -1이면 미완료
-    public bool HasFinished => TimeTaken > 0;
 
     /* ────────── Mono / Fusion ────────── */
     public override void Spawned()
@@ -98,7 +97,7 @@ public class Putter : NetworkBehaviour
         TimeTaken = Runner.SimulationTime;
         Debug.Log($"[{Runner.LocalPlayer}] 내 공 도착 → 시간 기록: {TimeTaken:F2}초");
 
-            GameManager.instance.Rpc_NotifyGoalReached(Runner.LocalPlayer);
+        GameManager.instance.Rpc_NotifyGoalReached(Runner.LocalPlayer);
     }
 
 }

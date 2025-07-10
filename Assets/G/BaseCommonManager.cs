@@ -9,17 +9,17 @@ using UnityEngine;
 public abstract class BaseCommonManager : NetworkBehaviour, IStateAuthorityChanged,  INetworkRunnerCallbacks
 {
     [Header("조이스틱")]
-    [SerializeField] protected Joystick joystick;
-    public Joystick joystickInstance;
+    [SerializeField] protected Joystick _joystick;
+    public Joystick JoystickInstance;
 
     [Header("카운트")]
     [Networked] public int AddCount { get; set; }
-    [Networked] protected TickTimer gameTimer { get; set; }
+    [Networked] protected TickTimer PreGameCountdownTimer { get; set; }
 
-    protected int startCount;
-    protected int finishCount;
+    protected int _startCountdownSeconds;
+    protected int _endCountdownSeconds;
 
-    protected ChangeDetector _changes;
+    protected ChangeDetector _changeDetector;
 
     // 겜매니저 공통 로직 작성하고 각각 로직은 Onspawned 자식 매니저에서 작성하기
     [Networked, Capacity(6)]
@@ -38,14 +38,14 @@ public abstract class BaseCommonManager : NetworkBehaviour, IStateAuthorityChang
         }
 
         // [ 조이스틱 ]
-        if (joystick != null && InterfaceManager.instance?.mainCanvas != null) 
+        if (_joystick != null && InterfaceManager.instance?.mainCanvas != null) 
         {
-            joystickInstance = GameObject.Instantiate(joystick, InterfaceManager.instance.mainCanvas.transform);
+            JoystickInstance = GameObject.Instantiate(_joystick, InterfaceManager.instance.mainCanvas.transform);
         }
 
         // [ 타이머 ]
      
-        _changes = GetChangeDetector(ChangeDetector.Source.SimulationState);
+        _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
 
     }
   

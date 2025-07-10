@@ -81,7 +81,51 @@ Putter.cs
 ===============================
 라운드 종료 순서 정리
 ===============================
-Hole 
+
+1. Hole (도착 트리거)
+   - Hole에 부착된 `OnTriggerEnter` 스크립트가 존재하며,
+   - 플레이어(Putter)의 `TryRegisterGoalArrival()` 메서드를 호출함.
+     ㄴ (설명) 즉, 플레이어가 홀에 도달하면 해당 메서드를 통해 "나 도착했어!" 라는 신호를 보냄.
+
+2. Putter (도착 시간 기록 및 마스터에게 알림)
+   - `TryRegisterGoalArrival()`에서는 내 도착 시간을 `Networked` 변수에 저장함.
+     ㄴ 모든 클라이언트가 내 도착 시점을 알 수 있게 됨.
+     ㄴ 참고: 이때 시간은 `Runner.SimulationTime` 기준으로 기록됨 (네트워크 시간 기준).
+
+   - 이후 마스터 클라이언트에게 "도착했어요!"라고 알림을 보내야 함.
+     ㄴ `GameManager.instance.Rpc_NotifyGoalReached(playerRef)` 호출
+     ㄴ 이 메서드는 `[Rpc(RpcSources.All, RpcTargets.StateAuthority)]`로 되어 있어서,
+        - **누구나 호출은 가능하지만**
+        - **실제 실행은 마스터 클라이언트에서만** 발생함 (StateAuthority 대상)
+
+3. GameManager (마스터가 타이머 설정)
+   - 마스터 클라이언트에서는 도착 알림을 받으면 `ResultTimer`를 설정함:
+     ```
+     ResultTimer = TickTimer.CreateFromSeconds(Runner, 10f);
+     ```
+   - 이후 모든 클라이언트의 `GameManager.Render()`에서 이 `ResultTimer`의 남은 시간을 실시간으로 확인하며
+     카운트다운을 시각적으로 출력함.
+
+===============================
+타이머 관련 설명
+===============================
+
+1. ResultTimer.IsRunning
+   ㄴ 타이머가 TickTimer.None 상태가 아니라면 true 반환 (즉, 한 번이라도 설정된 적 있다면 true)
+   ㄴ 타이머 시간이 이미 만료돼도 초기화( TickTimer.None; )를 안 하면 true 계속 반환함 
+        
+
+2. PuttTimer.ExpiredOrNotRunning(Runner)
+   ㄴ 타이머가 아직 설정되지 않았음 → true
+   ㄴ 타이머 만료됨 → true
+   ㄴ 즉, 타이머가 실행 중이지 않은 모든 상황에서 true 반환
+   
+3 타이머가 한 번 실행된 적이 있으면서 만료된 경우를 체크하고 싶다면
+if (RoundEndTimer.IsRunning && RoundEndTimer.Expired(Runner))
+
+
+
+
 
 ===============================
 공통 해당
@@ -171,7 +215,20 @@ DeleteAsync()
 
 GetSnapshotAsync() 로 가져온 snap 변수에는 뭐가 있을까? https://cherry22.tistory.com/entry/%ED%8C%8C%EC%9D%B4%EC%96%B4%EB%B2%A0%EC%9D%B4%EC%8A%A4-GetSnapShotAsync
 
+===============================
+TEMP CODE
+===============================
+
+- 플레이어 체크        
+Debug.Log($"[Room_Mng] ObjectByRef Count: {ObjectByRef.Count}");
+foreach (var kvp in ObjectByRef)
+{
+    string key = kvp.Key.ToString();
+    string val = kvp.Value != null ? kvp.Value.name : "null";
+    Debug.Log($"PlayerRef: {key} → Putter: {val}");
+}
 */
+
 
 
 public class memo : MonoBehaviour

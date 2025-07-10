@@ -45,10 +45,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 111afbde225cc7d45af89fcf98d88d20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  ballPrefab: {fileID: 276927941885534415, guid: 821be8c6f59fe594a91ad29732559b9b, type: 3}
+  _joystick: {fileID: 694944198341527439, guid: 4478bce3f7ee04a468df03f5b14fb395, type: 3}
+  JoystickInstance: {fileID: 0}
   _AddCount: 0
-  addCountInterver: 10
-  joystick: {fileID: 694944198341527439, guid: 4478bce3f7ee04a468df03f5b14fb395, type: 3}
+  _ObjectByRef:
+    _items: []
 --- !u!114 &3765628353748632056
 MonoBehaviour:
   m_ObjectHideFlags: 0
