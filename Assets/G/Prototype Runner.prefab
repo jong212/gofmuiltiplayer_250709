@@ -16,7 +16,6 @@ GameObject:
   - component: {fileID: 1103655588006811386}
   - component: {fileID: 2740596322902086122}
   - component: {fileID: 5690162266082376348}
-  - component: {fileID: 542130321112923219}
   m_Layer: 0
   m_Name: Prototype Runner
   m_TagString: Untagged
@@ -90,8 +89,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   <PlayerPrefab>k__BackingField: {fileID: 4529645544484441693, guid: 483588457e5cfc343813735c5837680f, type: 3}
-  roomMngPrefab: {fileID: 6853480736278113044, guid: 7abdf645d3e2a394ebfe0a848869b2d8, type: 3}
-  room_mng: {fileID: 0}
 --- !u!114 &1103655588006811386
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -191,21 +188,3 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   DelayIfSceneManagerIsBusy: 1
---- !u!114 &542130321112923219
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 2740596322902086123}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  SortKey: 2100879256
-  ObjectInterest: 1
-  Flags: 262145
-  NestedObjects: []
-  NetworkedBehaviours: []
-  ForceRemoteRenderTimeframe: 0

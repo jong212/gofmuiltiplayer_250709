@@ -8,22 +8,11 @@ using UnityEngine;
 
 public abstract class BaseCommonManager : NetworkBehaviour, IStateAuthorityChanged,  INetworkRunnerCallbacks
 {
-    [Header("조이스틱")]
-    [SerializeField] protected Joystick _joystick;
-    public Joystick JoystickInstance;
-
-    [Header("카운트")]
-    [Networked] public int AddCount { get; set; }
-    [Networked] protected TickTimer PreGameCountdownTimer { get; set; }
-
-    protected int _startCountdownSeconds;
-    protected int _endCountdownSeconds;
-
-    protected ChangeDetector _changeDetector;
-
-    // 겜매니저 공통 로직 작성하고 각각 로직은 Onspawned 자식 매니저에서 작성하기
     [Networked, Capacity(6)]
     public NetworkDictionary<PlayerRef, Putter> ObjectByRef => default;
+    public ChangeDetector _changeDetector;
+    public Joystick JoystickInstance;
+
 
     public override void Spawned() //NetworkBehaviour 안에 virtual로 정의되어 잇어서 override (재정의) 했고 이거 자식도 override하면됨
     {
@@ -38,18 +27,16 @@ public abstract class BaseCommonManager : NetworkBehaviour, IStateAuthorityChang
         }
 
         // [ 조이스틱 ]
-        if (_joystick != null && InterfaceManager.instance?.mainCanvas != null) 
+        if (InterfaceManager.instance?.mainCanvas != null && JoystickInstance == null) 
         {
-            JoystickInstance = GameObject.Instantiate(_joystick, InterfaceManager.instance.mainCanvas.transform);
+            JoystickInstance = GameObject.Instantiate(InterfaceManager.instance._joystick, InterfaceManager.instance.mainCanvas.transform);
         }
 
-        // [ 타이머 ]
-     
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);
 
     }
   
-    #region # 실시간 Player In Callback
+    #region # 실시간 Player Join Callback
     public void OnPlayerJoined(NetworkRunner runner, PlayerRef player)
     {
         if (!Runner.IsSharedModeMasterClient) return;
@@ -67,7 +54,7 @@ public abstract class BaseCommonManager : NetworkBehaviour, IStateAuthorityChang
     }
     #endregion
 
-    #region # 실시간 Player Out Callback
+    #region # 실시간 Player Leave Callback
     public void OnPlayerLeft(NetworkRunner runner, PlayerRef player) // 인터페이스의 구현이기 때문에 override x
     {
         if (!Object || !Object.HasStateAuthority) //여기에 마스터 클라인지 체크하는 부분으로 하면 안 된다고 함 why? 마스터클라나갈때 남은 클라들 잠시 true되는 문제가 있다고함;
@@ -79,7 +66,6 @@ public abstract class BaseCommonManager : NetworkBehaviour, IStateAuthorityChang
         }
     }
     #endregion
-
 
     #region # 마스터 클라 권한 이전 후 실행로직
     public virtual void StateAuthorityChanged()

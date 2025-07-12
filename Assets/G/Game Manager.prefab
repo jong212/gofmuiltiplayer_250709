@@ -45,11 +45,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 111afbde225cc7d45af89fcf98d88d20, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _joystick: {fileID: 694944198341527439, guid: 4478bce3f7ee04a468df03f5b14fb395, type: 3}
   JoystickInstance: {fileID: 0}
-  _AddCount: 0
   _ObjectByRef:
     _items: []
+  _AddCount: 0
+  Levels:
+  - {fileID: 6093272740648540119, guid: 93e0fd3f174ce234aaf8d88e28b5574b, type: 3}
+  - {fileID: 7448498154418005375, guid: f58210f8b1f741d4586f7287d5656c91, type: 3}
+  _CurrentStatus: 0
+  _CurrentRound: 0
 --- !u!114 &3765628353748632056
 MonoBehaviour:
   m_ObjectHideFlags: 0

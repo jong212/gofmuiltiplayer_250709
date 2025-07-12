@@ -3,11 +3,18 @@
 
 /* My Memo
 ===============================
-걍 메모
+일반 메모
 ===============================
-- physics material 값 바꾸기 전에 백업해두자... 그리고 sphere collider 의 radius 값 막 바꾸면 안된다 0.035긴 한데 퍼팅할때 흔들리는 형상 잇으면 이 값을 줄여봐라 그리고 이 값이랑 physicsmaterial 연관잇으니 메모...
+- Physics Material 값 지금이 최적의 값임 바꾸기 전에 백업 해두기
+  ㄴ 그리고 플레이어의 sphere collider 의 radius 값 0.035가 최적의 값임 퍼팅 후 흔들리는 현상 있을 때 값 줄여보기
 - 게임 종료 로직 일단 참조 오류 방지를 위해 Game Maganger Despawned 에 처리하자
-- 강의 Memo1 조이스틱 팩 코드 수정함  드래그중 체크하기 위해
+
+===============================
+긴 로직 메모
+===============================
+
+Memo1
+
 
 ===============================
 스크립트 기능 정리
@@ -26,7 +33,7 @@ Putter.cs
    - 모든 클라이언트: 사용자가 ‘게임 시작’ 버튼 클릭
 
 1. 러너 준비
-   (Matchmaker)
+   (MatchManager)
    - 모든 클라이언트:
      1) 기존 Runner가 있으면 Shutdown()으로 정리
      2) 새 Runner 생성  →  PlayerSpawner 스크립트도 같이 생성
@@ -123,55 +130,9 @@ Putter.cs
 3 타이머가 한 번 실행된 적이 있으면서 만료된 경우를 체크하고 싶다면
 if (RoundEndTimer.IsRunning && RoundEndTimer.Expired(Runner))
 
-
-
-
-
-===============================
-공통 해당
-===============================
-
- -      Object.HasStateAuthority - 내가 이 오브젝트의 권한을 가지고 있다면 true 반환
-
- -      Object.StateAuthority -  이 NetworkObject를 현재 제어(상태 변경 권한)하고 있는 플레이어의 PlayerRef 를 반환
-
- -      !Object.StateAuthority.IsNone 이 오브젝트의 권한을 아무도 가지지 않으면의 반대니까 누군가가 이 오브젝트의 권한을 가지고 있다면 True 반환
-
- -      bool Object.IsValid  네트워크에 아직 존재하고, Despawn되지 않았다면 true 이고 이미 despawn 되었거나 오류로 제거된 상태라면 false
-
- -      [Rpc(RpcSources.All, RpcTargets.All)] 이거 모든 클라에서 호출되는줄 알았는데 [RpcTarget]이 있으면 모든 클라가 아니라 해당 클라에만 실행 됨 신기       
-        private void Rpc_Authorized([RpcTarget] PlayerRef player)
-
- -      NetworkObject에서 Is Master Client Object 옵션을 체크하는 게 무슨의 미 ?https://cherry22.tistory.com/entry/photon-Network-Object-%EC%BB%B4%ED%8F%AC%EB%84%8C%ED%8A%B8%EC%97%90%EC%84%9C-is-Master-Client-Object-%EC%98%B5%EC%85%98%EC%9D%80-%EB%AD%98-%EC%9D%98%EB%AF%B8%ED%95%98%EB%82%98
-
- - 	    Matchmaker.Instance.Runner.Shutdown(); 이거 호출하면 OnShutdown() 콜백 자동 호출 됨
 ---------------------------------------------------------------------------------------------
-  Memo1 Runner는 matchmaker에서 직접 Instance후 참조하고 있고 다른데서는 networkbehaviour의 Runner속성을 사용하는 것인데 매치메이커에서 생성된 runner와 동일 인스턴스임 걍 같은거임
+타이머 관련 설명 2 (TickTimer.CreateFromSeconds )
 ---------------------------------------------------------------------------------------------
-  Memo2 네트워크 변수가 선언된 스크립트를 참조하는 곳에서는 항상 에러처리를 해야한다
-        에러 케이스 중에서 MatchMaker에서 Room_Mng의 ReadyToStart 네트워크 변수를 계속해서 참조하는 로직이였는데
-        코루틴으로 돌아가다 보니까 방을 나갔을 때 Moom_Mng가 없어져서 터졌다 글서 IsValid 일 때에만 처리되게 예외처리 했고 
-        방을 나갈 때 Matchmaker.Instance.Runner.Shutdown(); 이걸 호출시키면 알아서 콜백으로 public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason) 이게 호출되는데 여기서 코루틴을 없애버림 그니까 network 변수를 참조하는 코루틴을 종료 함으로서 2중 방어
----------------------------------------------------------------------------------------------
-  Memo3  ⚠️ [주의] Despawned()는 일반적으로 모든 클라이언트에서 호출되는 콜백이지만,
-         현재 GameManager는 `Is Master Client Object` 옵션이 활성화되어 있음.
-         이 설정이 켜져 있으면, 마스터 클라이언트가 나가도 이 오브젝트는 Despawn되지 않고,
-         다음 마스터 클라이언트에게 State Authority가 자동으로 이전됨.
-        
-         따라서:
-         👉 GameManager 오브젝트는 파괴되지 않고 그대로 유지됨.
-         👉 이로 인해 Despawned()는 마스터 클라이언트(퇴장한 나)에게만 호출되고,
-            다른 클라이언트에서는 호출되지 않음.
-        
-         ✅ 이 콜백 내에서는 씬 안에서 참조 중이던 리소스나 컴포넌트를 안전하게 정리해두는 것이 좋음.
-            예: 카메라 대상 해제, HUD 정리, 싱글톤 초기화 등
-         와 이거 골떄림 A클라가 나갓는데 B클라의 카메라가 해제 됨 위 내용은 despawned를 겜오브젝트에 했을때가정이고 지금은 putter 그 플레이어 공한테해놧는데 이공은 is masterclient이거아니니까 despawned 콜백이 모든 클라에서 호출 그니까 다른클라의 내 프록시 오브젝트에서 호출을하는데 이게 카메라싱글톤에접근해서 null떄려버리니까 다른 클라의 카메라가 해제되었음 ㅋㅋ
-             if (HasInputAuthority) 이렇게 하면 프록시에서  실행 안하니까 괜찮을듯...
-              {
-                  CameraController.AssignControl(null);
-                }
----------------------------------------------------------------------------------------------
-Memo4 TickTimer.CreateFromSeconds 
 
 의미 : 지금부터 특정 시간(초) 뒤에 만료되는 타이머 객체를 생성하는 것
 
@@ -188,6 +149,39 @@ Memo4 TickTimer.CreateFromSeconds
         → Expired(Runner)로 Runner의 현재 시간과 비교하여 만료 여부를 확인함
         → true면 지정된 시간이 지났다는 뜻
 ---------------------------------------------------------------------------------------------
+
+===============================
+공통 해당
+===============================
+
+ - Object.HasStateAuthority : 내가 이 오브젝트의 권한을 가지고 있다면 true 반환
+
+ - Object.StateAuthority    : 이 NetworkObject를 현재 제어(상태 변경 권한)하고 있는 플레이어의 PlayerRef 를 반환
+
+ - !Object.StateAuthority.IsNone 이 오브젝트의 권한을 아무도 가지지 않으면의 반대니까 누군가가 이 오브젝트의 권한을 가지고 있다면 True 반환
+
+ - ✅ [Rpc(RpcSources.All, RpcTargets.All)] + [RpcTarget] 요약 (특정 클라에서만 함수 호출을 시키고 싶을 때)
+   
+    [Rpc(RpcSources.All, RpcTargets.All)] 
+    private void Rpc_Authorized([RpcTarget] PlayerRef player)
+
+    ㄴ 모든 클라에게 보냄
+    ㄴ [RpcTarget]으로 지정된 클라에서만 실행됨   
+
+ - bool Object.IsValid  
+   ㄴ 네트워크에 아직 존재하고, Despawn되지 않았다면 true 이고 이미 despawn 되었거나 오류로 제거된 상태라면 false
+
+ - NetworkObject 컴포넌트의 Is Master Client Object 옵션이란?
+   ㄴ https://cherry22.tistory.com/entry/photon-Network-Object-%EC%BB%B4%ED%8F%AC%EB%84%8C%ED%8A%B8%EC%97%90%EC%84%9C-is-Master-Client-Object-%EC%98%B5%EC%85%98%EC%9D%80-%EB%AD%98-%EC%9D%98%EB%AF%B8%ED%95%98%EB%82%98
+
+ - 방 나갈 실행 해야하는 콜백함수는?
+   ㄴ 예를들어 방에서 나가나는 경우 세션이 끊기는 것이기 때문에 러너를 꺼야하는데
+   ㄴ MatchManager.Instance.Runner.Shutdown(); 이거 호출하면 알아서 꺼지고 그 다음
+   ㄴ OnShutdown() 콜백함수가 자동으로 실행 됨 
+
+ - 러너는 전역 변수?
+   ㄴ Runner는 MatchMng 에서 생성하며 거의 전역변수 처럼 공개적이기 때문에 어디서든 접근이 가능함
+
 
 
 ===============================

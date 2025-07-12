@@ -1,6 +1,13 @@
 using Fusion;
+using System;
 using UnityEngine;
 
+[Serializable]
+public struct RoundResultStruct : INetworkStruct
+{
+    public int Strokes;
+    public float TimeTaken;
+}
 public class Putter : NetworkBehaviour
 {
     [Header("Refs")]
@@ -18,13 +25,14 @@ public class Putter : NetworkBehaviour
     [Networked] PlayerInput CurrInput { get; set; }
 
     PlayerInput prevInput = default;
+    [Networked, Capacity(10)] // 최대 10라운드 예시
+    public NetworkDictionary<int, RoundResultStruct> RoundResults => default;
+
 
     bool CanPutt => PuttTimer.ExpiredOrNotRunning(Runner);
     public bool controlFlag;
-
-
-    [Networked] public int Strokes { get; set; } // 스트록 횟수 누적
-    [Networked] public float TimeTaken { get; set; } // -1이면 미완료
+    public int Strokes { get; set; } // 스트록 횟수 누적
+    public float TimeTaken { get; set; } // -1이면 미완료
 
     /* ────────── Mono / Fusion ────────── */
     public override void Spawned()
@@ -34,6 +42,7 @@ public class Putter : NetworkBehaviour
     }
     public override void Render()
     {
+        if (!Object.HasStateAuthority) return;
         if (CurrInput.isDragging)
         {
             InterfaceManager.instance.ChargeCircle.gameObject.SetActive(true);
@@ -45,6 +54,13 @@ public class Putter : NetworkBehaviour
             InterfaceManager.instance.ChargeCircle.fillAmount = CurrInput.dragDelta;
         }
 
+    }
+    public void TeleportTo(Vector3 pos)
+    {
+        if (!HasStateAuthority) return;
+
+        transform.position = pos;
+        rb.linearVelocity = Vector3.zero;
     }
     public override void FixedUpdateNetwork()
     {
@@ -94,7 +110,11 @@ public class Putter : NetworkBehaviour
 
         if (TimeTaken > 0f) return; // 이미 도착했으면 무시
 
-        TimeTaken = Runner.SimulationTime;
+        RoundResults.Set(GameManager.instance.CurrentRound, new RoundResultStruct
+        {
+            Strokes = Strokes,
+            TimeTaken = Runner.SimulationTime
+        });
         Debug.Log($"[{Runner.LocalPlayer}] 내 공 도착 → 시간 기록: {TimeTaken:F2}초");
 
         GameManager.instance.Rpc_NotifyGoalReached(Runner.LocalPlayer);

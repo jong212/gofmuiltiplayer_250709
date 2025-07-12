@@ -5,67 +5,76 @@ using UnityEngine;
 using UnityEngine.SceneManagement;
 using Fusion;
 using System.Linq;
-public class Matchmaker : MonoBehaviour, INetworkRunnerCallbacks
+// Fusion 매치메이킹, 세션 관리 역할
+public class MatchManager : MonoBehaviour, INetworkRunnerCallbacks
 {
-	public static Matchmaker Instance { get; private set; }
 
-	[SerializeField, ScenePath] string gameScene;
+	public static MatchManager Instance { get; private set; }
+
+    [SerializeField, ScenePath] string gameScene;
 	public NetworkRunner runnerPrefab;
 	public NetworkObject managerPrefab;
 	public NetworkObject roomMngPrefab;
 
-	// Memo1 
-	public NetworkRunner Runner { get; private set; }
+ 	public NetworkRunner Runner { get; private set; } // 현재 실행 중인 Runner
 
     Coroutine _joinRoutine;
+    private void Awake()
+    {
+        if (Instance && Instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        Instance = this;
+    }
 
-	private void Awake()
+	public void Init()
 	{
-		if (Instance != null) { Destroy(gameObject); return; }
-		Instance = this;
-		DontDestroyOnLoad(gameObject);
+	
 	}
 
-	private void OnDestroy()
-	{
-		if (Instance == this) Instance = null;
-	}
 
-	// 1-1 게임 시작 초반부 뭐 없음
-	public void TryConnectShared()
+    public void TryConnectShared()
 	{
 		TryConnectSharedSession(null);
 	}
 
-	public void TryConnectSharedSession(string sessionCode, System.Action successCallback = null)
+    // 세션에 참가 시도 (성공 시 콜백 실행 가능)
+    public void TryConnectSharedSession(string sessionCode, System.Action successCallback = null)
 	{
         _joinRoutine = StartCoroutine(ConnectSharedSessionRoutine(sessionCode, successCallback));
 	}
 
-	// 1-2 Runner가 있는지 체크하고 있으면 종료후 다시스폰 (겜도중 나온다음 다시 들어갈때 초기화 하는부분인듯)
-	IEnumerator ConnectSharedSessionRoutine(string sessionCode, System.Action successCallback)
+    // 실제 세션 참가 루틴
+    IEnumerator ConnectSharedSessionRoutine(string sessionCode, System.Action successCallback)
 	{
+        // 기존 Runner가 있으면 종료
 		if (Runner) Runner.Shutdown();
-       Runner = Instantiate(runnerPrefab);
 
-        //1-3 이구간은 방판사람 컴퓨터에 게임매니저를 스폰하는 로직 이라고 보면 됨
-        // 방판사람은 LoadScene(gameScene); 이걸통해 씬을 로드해서 게임방에 입장을 하고 마스터클라가 아닌사람은 그냥 StartGame 으로 마스터클라가 참여한 씬을 그냥 따라감
-		// 씬이 로드 된 이후에 게임매니저 스폰되게 하기 위해 OnSceneLoadDene에 콜백을 건 것이고 마스터 클라 아닌 애들은 따로 겜매니저를 생성하지 않지만 씬에 참여하면 복제본 게임매니저가 Spawn을 대신 호출하긴 함
-
+        // 새로운 Runner 생성
+        Runner = Instantiate(runnerPrefab);
+ 
         NetworkEvents networkEvents = Runner.GetComponent<NetworkEvents>();
 
-		void SpawnManager(NetworkRunner runner)
+        // 씬이 로드 완료되었을 때 호출할 콜백 등록
+        void SpawnManager(NetworkRunner runner)
 		{
-			if (Runner.IsSharedModeMasterClient) {
+            // 마스터 클라이언트만 GameManager를 스폰한다
+            if (Runner.IsSharedModeMasterClient) {
                 runner.Spawn(managerPrefab);
             }
-			networkEvents.OnSceneLoadDone.RemoveListener(SpawnManager);
+
+            // 리스너 제거 (한 번만 실행되도록)
+            networkEvents.OnSceneLoadDone.RemoveListener(SpawnManager);
 		}
 		networkEvents.OnSceneLoadDone.AddListener(SpawnManager);
 
 		Runner.AddCallbacks(this);
-		//1-4 마스터클라는 아래서 따로 씬을 로드하고 일반 클리는 아래 Runner.StartGame 를 통해 씬 로드한다고 함
-		Task<StartGameResult> task = Runner.StartGame(new StartGameArgs()
+
+        // [1] StartGame을 통해 세션에 참가하거나 없으면 새로 생성함 (생성한 클라는 자동으로 마스터클라 권한 생김)
+        // 모든 클라이언트가 이 과정을 실행해야 세션에 참여 가능
+        Task<StartGameResult> task = Runner.StartGame(new StartGameArgs()
 		{
 			GameMode = GameMode.Shared,
 			SessionName = null, //  << sessionCode 로 하면 친구끼리 이고 null 하면 랜덤방 매치메이킹
@@ -76,32 +85,31 @@ public class Matchmaker : MonoBehaviour, INetworkRunnerCallbacks
 		while (!task.IsCompleted) yield return null;		
 		StartGameResult result = task.Result;
 
-        // 서버 연결 및 세션 참가 성공 → 이후 로직 진행 가능
+        // [2] 세션에 성공적으로 참가한 경우
         if (result.Ok)
 		{
             //successCallback?.Invoke();
             Room_Mng roomManager = null;
 
+            // [3] 마스터 클라이언트만 Room_Mng 객체를 직접 스폰
             if (Runner.IsSharedModeMasterClient)
             {
+                // Room_Mng의 스폰 성공 여부 및 Ready 상태 대기
                 var roomObj = Runner.Spawn(roomMngPrefab);
                 if (roomObj != null && roomObj.TryGetBehaviour<Room_Mng>(out var manager)) { roomManager = manager; }
-				// 이거 예외처리 이렇게 한 이유는 이게 어쨋든 방인원이 찰 때 까지 대기하는 코루틴인데 memo2 번에 설명한 것처럼 interfacemanager 에서 shotdown 같은거 해서 네트워크가 끊기고 씬 이동 시키는데 moon_mng가 없는데 거기 잇엇던 네트워크 변수 업서진거에 참조하니까 터지는거임 그래서 IsValid 로 유효한지를 체크하는 것임
-				yield return new WaitUntil
+                // 방 입장 대기: roomManager가 유효하고 ReadyToStart 플래그가 true가 될 때까지 기다림
+                yield return new WaitUntil
 				(
 					() =>
-					roomManager &&                      
-					roomManager.Object.IsValid &&      
-					roomManager.ReadyToStart
-				);
-
+                    roomManager &&                       // Room_Mng 컴포넌트가 존재하고
+                    roomManager.Object.IsValid &&        // 네트워크 오브젝트가 유효하며
+                    roomManager.ReadyToStart             // 준비 완료 상태인 경우
+                );
+                // [4] 마스터 클라이언트만 씬 로드 → 일반 클라이언트는 자동으로 따라감
                 Runner.LoadScene(gameScene);
             }
         }
 	}
-   
-
-
 
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
 	{
@@ -112,9 +120,13 @@ public class Matchmaker : MonoBehaviour, INetworkRunnerCallbacks
 			SceneManager.LoadScene("Menu");
 		}
 	}
+    private void OnDestroy()
+    {
+        if (Instance == this) Instance = null;
+    }
 
-	#region INetworkRunnerCallbacks
-	public void OnConnectedToServer(NetworkRunner runner) { }
+    #region INetworkRunnerCallbacks
+    public void OnConnectedToServer(NetworkRunner runner) { }
 	public void OnConnectFailed(NetworkRunner runner, Fusion.Sockets.NetAddress remoteAddress, Fusion.Sockets.NetConnectFailedReason reason) { }
 	public void OnConnectRequest(NetworkRunner runner, NetworkRunnerCallbackArgs.ConnectRequest request, byte[] token) {
         if (Runner.ActivePlayers.Count() >= 2)

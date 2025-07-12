@@ -6,22 +6,18 @@ public class ResourcesManager : MonoBehaviour
 
     public static ResourcesManager instance;
 
+
     private void Awake()
     {
-        if (instance)
+        if (instance && instance != this)
         {
-            Debug.LogWarning("Instance already exists!");
             Destroy(gameObject);
+            return;
         }
-        else
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
+        instance = this;
     }
 
-	#endregion
+    #endregion
 
 
-    public Level levels;
 }

@@ -13,16 +13,12 @@ public class InterfaceManager : MonoBehaviour
 
     private void Awake()
     {
-        if (instance)
+        if (instance && instance != this)
         {
-            Debug.LogWarning("Instance already exists!");
             Destroy(gameObject);
+            return;
         }
-        else
-        {
-            instance = this;
-            DontDestroyOnLoad(gameObject);
-        }
+        instance = this;
     }
 
     #endregion
@@ -30,9 +26,13 @@ public class InterfaceManager : MonoBehaviour
     [Header("------ Canvases ------")]
     public Canvas mainCanvas;
     public Canvas worldCanvas;
-    public VariableJoystick joystick;
     public TextMeshProUGUI countText;
     public TextMeshProUGUI coomPlayerCount;
+    public Joystick _joystick;
     public Image ChargeCircle;
 
+    public void Init()
+    {
+
+    }
 }
