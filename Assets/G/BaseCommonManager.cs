@@ -45,14 +45,28 @@ public abstract class BaseCommonManager : NetworkBehaviour, IStateAuthorityChang
     }
     private IEnumerator WaitAndRegister(PlayerRef player)
     {
-        Debug.Log(player.ToString());
-        yield return new WaitUntil(() => Runner.TryGetPlayerObject(player, out var obj));
-        var obj = Runner.GetPlayerObject(player);
-        if (obj.TryGetComponent<Putter>(out var putter) && !ObjectByRef.ContainsKey(player))
+        Debug.Log($"[WaitAndRegister] Waiting for PlayerRef: {player}");
+
+        yield return new WaitUntil(() =>
+            Runner != null &&
+            player != null &&
+            Runner.TryGetPlayerObject(player, out var _)
+        );
+
+        if (Runner.TryGetPlayerObject(player, out var obj) && obj != null)
         {
-            ObjectByRef.Set(player, putter);
+            if (obj.TryGetComponent<Putter>(out var putter) && !ObjectByRef.ContainsKey(player))
+            {
+                ObjectByRef.Set(player, putter);
+                Debug.Log($"[WaitAndRegister] Registered putter for {player}");
+            }
+        }
+        else
+        {
+            Debug.LogWarning($"[WaitAndRegister] Could not find PlayerObject for {player} even after wait.");
         }
     }
+
     #endregion
 
     #region # 실시간 Player Leave Callback

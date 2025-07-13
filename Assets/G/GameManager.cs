@@ -23,7 +23,7 @@ public class GameManager : BaseCommonManager
     [Networked] public int AddCount { get; set; } //미사용
 
     [SerializeField] NetworkObject[] Levels;
-    [Networked] NetworkObject _currentLevel { get; set; }
+    [Networked] NetworkObject _currentLevelInstance { get; set; }
 
     private int _prevCountdown = -999;
 
@@ -36,6 +36,7 @@ public class GameManager : BaseCommonManager
     [Header("State")]
     [Networked] public GameStatus CurrentStatus { get; set; }
     [Networked] public int CurrentRound { get; set; }             // 현재 라운드
+    private bool _startTimerInitialized = false;
 
     public override void Spawned()
     {
@@ -47,8 +48,7 @@ public class GameManager : BaseCommonManager
     {
         if (Object.HasStateAuthority)
         {
-            _currentLevel = Runner.Spawn(Levels[CurrentRound]);
-            StartCoroutine(StartCountdownCoroutine());
+        
         }
     }
   
@@ -244,6 +244,18 @@ public class GameManager : BaseCommonManager
 
         switch (CurrentStatus)
         {
+            case GameStatus.WaitingToStart:
+                // PlayerObject가 전부 들어왔는지 확인
+                if(_currentLevelInstance == null) Runner.Spawn(Levels[CurrentRound]);
+                if (AllPlayersReady())
+                {
+                    Debug.Log("[GameManager] 모든 플레이어 준비됨 → 게임 시작");
+
+                    RoundStartTimer = TickTimer.CreateFromSeconds(Runner, 3);
+                    _prevCountdown = -999;
+                    CurrentStatus = GameStatus.Playing;
+                }
+                break;
             case GameStatus.RoundEndWait:
                 if (RoundEndWaitTimer.Expired(Runner))
                 {
@@ -267,12 +279,12 @@ public class GameManager : BaseCommonManager
                     if (CurrentRound >= 1) {CurrentStatus = GameStatus.GameEnd;  break; }
                     CurrentRound++;
                     // 기존 맵 제거
-                    if (_currentLevel != null)
+                    if (_currentLevelInstance != null)
                     {
-                        Runner.Despawn(_currentLevel);
-                        _currentLevel = null;
+                        Runner.Despawn(_currentLevelInstance);
+                        _currentLevelInstance = null;
                     }
-                    _currentLevel = Runner.Spawn(Levels[CurrentRound]);
+                    _currentLevelInstance = Runner.Spawn(Levels[CurrentRound]);
 
                     Rpc_PlayerSpawnPosition();
                     RoundStartTimer = TickTimer.CreateFromSeconds(Runner, 5);
@@ -286,12 +298,16 @@ public class GameManager : BaseCommonManager
                 break;
         }
     }
-
-    private IEnumerator StartCountdownCoroutine()
+    private bool AllPlayersReady()
     {
-        yield return new WaitUntil(() => Runner.TryGetPlayerObject(Object.StateAuthority, out _));
-        RoundStartTimer = TickTimer.CreateFromSeconds(Runner, 3);
+        foreach (var player in Runner.ActivePlayers)
+        {
+            if (!Runner.TryGetPlayerObject(player, out _))
+                return false;
+        }
+        return true;
     }
+   
 
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void Rpc_NotifyGoalReached(PlayerRef player)

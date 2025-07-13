@@ -4,6 +4,7 @@ using UnityEngine;
 using static Unity.Collections.Unicode;
 public enum GameStatus
 {
+    WaitingToStart, // 모든 플레이어 들어올 때까지 대기
     Playing,        // 실제 라운드 플레이 중
     RoundEndWait,   // 잠시 대기 (미도착자 점수 처리)
     RoundEnd,       // 결과 정리 시간
