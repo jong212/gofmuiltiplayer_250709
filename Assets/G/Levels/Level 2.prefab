@@ -47,8 +47,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   SortKey: 1657979717
-  ObjectInterest: 0
-  Flags: 262145
+  ObjectInterest: 1
+  Flags: 131073
   NestedObjects: []
   NetworkedBehaviours:
   - {fileID: 1434589930807478198}
@@ -1233,6 +1233,14 @@ PrefabInstance:
     - target: {fileID: 1886337268622334030, guid: dbe7c1624b3411847b4e7730d1c5356c, type: 3}
       propertyPath: m_Name
       value: holeSquare
+      objectReference: {fileID: 0}
+    - target: {fileID: 3983220326098368836, guid: dbe7c1624b3411847b4e7730d1c5356c, type: 3}
+      propertyPath: m_LocalPosition.y
+      value: 0.122
+      objectReference: {fileID: 0}
+    - target: {fileID: 3983220326098368836, guid: dbe7c1624b3411847b4e7730d1c5356c, type: 3}
+      propertyPath: m_LocalPosition.z
+      value: -4.384
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 6451404817570218925, guid: dbe7c1624b3411847b4e7730d1c5356c, type: 3}

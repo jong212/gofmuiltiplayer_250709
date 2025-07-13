@@ -32,7 +32,7 @@ public class Putter : NetworkBehaviour
     bool CanPutt => PuttTimer.ExpiredOrNotRunning(Runner);
     public bool controlFlag;
     public int Strokes { get; set; } // 스트록 횟수 누적
-    public float TimeTaken { get; set; } // -1이면 미완료
+    //public float LocalTimeTaken { get; set; } // -1이면 미완료
 
     /* ────────── Mono / Fusion ────────── */
     public override void Spawned()
@@ -108,14 +108,14 @@ public class Putter : NetworkBehaviour
         // 자신이 조종 중인 오브젝트인지 확인 (내 클라의 Putter인지)
         if (Object.InputAuthority != Runner.LocalPlayer) return;
 
-        if (TimeTaken > 0f) return; // 이미 도착했으면 무시
+        if (RoundResults.ContainsKey(GameManager.instance.CurrentRound)) return;
 
         RoundResults.Set(GameManager.instance.CurrentRound, new RoundResultStruct
         {
             Strokes = Strokes,
             TimeTaken = Runner.SimulationTime
         });
-        Debug.Log($"[{Runner.LocalPlayer}] 내 공 도착 → 시간 기록: {TimeTaken:F2}초");
+        Debug.Log($"[{Runner.LocalPlayer}] 내 공 도착 → 시간 기록: {Runner.SimulationTime:F2}초");
 
         GameManager.instance.Rpc_NotifyGoalReached(Runner.LocalPlayer);
     }

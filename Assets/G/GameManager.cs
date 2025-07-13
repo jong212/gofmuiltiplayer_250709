@@ -29,8 +29,9 @@ public class GameManager : BaseCommonManager
 
     [Header("Timer")] 
     [Networked] public TickTimer RoundStartTimer { get; set; }  // 라운드 시작 타이머 3..2..1..
+    [Networked] TickTimer RoundEndWaitTimer { get; set; }       // 잠시 대기
     [Networked] TickTimer RoundEndTimer { get; set; }           // 라운드 도착 타이머 10...9...
-    [Networked] TickTimer ScoreBoardTimer { get; set; }           // 라운드 도착 타이머 10...9...
+    [Networked] TickTimer ScoreBoardTimer { get; set; }         // 라운드 도착 타이머 10...9...
     
     [Header("State")]
     [Networked] public GameStatus CurrentStatus { get; set; }
@@ -65,7 +66,7 @@ public class GameManager : BaseCommonManager
     {
 
         var remainingTime = RoundStartTimer.RemainingTime(Runner);
-        if (remainingTime.HasValue)
+        if (remainingTime.HasValue && remainingTime.Value <= 3)
         {
             int countdown = Mathf.CeilToInt(remainingTime.Value); //예: 2.3초 → 3, 0.1초 → 1
             if (countdown != _prevCountdown)
@@ -81,36 +82,119 @@ public class GameManager : BaseCommonManager
         int remainSec = Common_Utils.GetRemainingSecondsInt(RoundEndTimer, Runner);
         if (remainSec >= 0)
         {
-            Debug.Log($"남은 시간: {remainSec}초");
+            //Debug.Log($"라운드 종료까지: {remainSec}초");
         }
         if (RoundEndTimer.IsRunning && RoundEndTimer.Expired(Runner))
         {
+
+            var myPutter = Common_Utils.GetMyPutter();
+            if (myPutter == null) return; // 예외 방지
+
+            myPutter.controlFlag = false;
+
+            if (!myPutter.RoundResults.ContainsKey(CurrentRound))
+            {
+                // 내가 도착 못 했고, 아직 기록 안 했으면 기록
+                myPutter.RoundResults.Set(CurrentRound, new RoundResultStruct
+                {
+                    Strokes = myPutter.Strokes,
+                    TimeTaken = 0f
+                });
+
+                Debug.Log($"[로컬] 미도착 → 내 퍼팅 수만 기록됨: {myPutter.Strokes}타");
+            }
             if(Object.HasStateAuthority)
             {
-                CurrentStatus = GameStatus.RoundEnd;
+                CurrentStatus = GameStatus.RoundEndWait;
                 RoundEndTimer = TickTimer.None;
+                RoundEndWaitTimer = TickTimer.CreateFromSeconds(Runner, 2);
+
             }
         }
     }
     void RoundResult()
     {
-        foreach (var kvp in ObjectByRef)
-        {
-            var player = kvp.Key;
-            var putter = kvp.Value;
+        FinalScoreBoard board = new();
+        var players = GameManager.instance.ObjectByRef;
+        int maxRound = GameManager.instance.CurrentRound + 1;
 
-            if (putter.RoundResults.TryGet(CurrentRound, out var result))
-            {
-                Debug.Log($"[{player}] 라운드 {CurrentRound} 결과 - 스트로크: {result.Strokes}, 시간: {result.TimeTaken:F2}");
-                // 점수 집계 or 정렬 등...
-            }
-            else
-            {
-                Debug.LogWarning($"[{player}] 라운드 {CurrentRound} 결과 없음");
-            }
+        for (int r = 0; r < maxRound; r++)
+        {
+            /* ─────────────────────────────────────
+             * 1) 도착자 : 한 번에 모으고 정렬
+             * ────────────────────────────────────*/
+            var arrived = players
+                .Where(kv => kv.Value.RoundResults.TryGet(r, out var rr) && rr.TimeTaken > 0f)
+                .Select(kv => (kv.Key, kv.Value.RoundResults[r].Strokes, kv.Value.RoundResults[r].TimeTaken))
+                .OrderBy(t => t.TimeTaken)
+                .ToList();
+
+            var arrivedSet = new HashSet<PlayerRef>(arrived.Select(t => t.Key));  // O(1) lookup
+
+            /* 2) 점수 부여 – 도착자 */
+            for (int i = 0; i < arrived.Count; i++)
+                Add(board, arrived[i].Key, r, arrived[i].Strokes, i + 1, ScoreByRank(i + 1));
+
+            /* 3) 미도착자 0점 처리 – HashSet으로 빠른 필터링 */
+            foreach (var (p, putter) in players)
+                if (!arrivedSet.Contains(p))
+                {
+                    int s = putter.RoundResults.TryGet(r, out var rr) ? rr.Strokes : 0;
+                    Add(board, p, r, s, -1, 0);
+                }
         }
+
+        /* 4) 총합 순위 */
+        board.RankedByTotal = board.TotalScores
+            .OrderByDescending(kv => kv.Value)
+            .Select(kv => (kv.Key, kv.Value))
+            .ToList();
+
+
+        /* ────────────────────────
+         * 로컬 헬퍼 (중복↓)
+         * ───────────────────────*/
+        void Add(FinalScoreBoard b, PlayerRef p, int rnd, int strokes, int rank, int score)
+        {
+            if (!b.RoundScores.TryGetValue(p, out var dict))
+                b.RoundScores[p] = dict = new();
+            dict[rnd] = new RoundScoreData { Strokes = strokes, Rank = rank, Score = score };
+            b.TotalScores[p] = b.TotalScores.GetValueOrDefault(p) + score;
+        }
+
+        int ScoreByRank(int rank) => rank switch { 1 => 100, 2 => 80, 3 => 60, _ => 0 };
+        debugscore(board);
     }
 
+    void debugscore(FinalScoreBoard board)
+    {
+        Debug.Log("===== 라운드별 스코어 상세 =====");
+        foreach (var playerEntry in board.RoundScores)
+        {
+            PlayerRef player = playerEntry.Key;
+            int totalScore = board.TotalScores.GetValueOrDefault(player);
+
+            Debug.Log($"<color=yellow>{player}</color> (총합 {totalScore}점)");
+
+            foreach (var roundEntry in playerEntry.Value.OrderBy(k => k.Key))
+            {
+                int r = roundEntry.Key + 1;          // 사람이 읽기 좋게 1-base
+                var data = roundEntry.Value;
+                string rankS = data.Rank > 0 ? $"{data.Rank}등" : "미도착";
+
+                Debug.Log($"   ▸ Round {r} : " +
+                          $"{data.Strokes}타 / {rankS} / {data.Score}점");
+            }
+        }
+
+        // 최종 랭킹
+        Debug.Log("===== 최종 랭킹 =====");
+        for (int i = 0; i < board.RankedByTotal.Count; i++)
+        {
+            var (player, total) = board.RankedByTotal[i];
+            Debug.Log($"{i + 1}등 ▶ {player} : {total}점");
+        }
+    }
     private void TempEscape()
     {
         if (Input.GetKey(KeyCode.F1) && Object.HasStateAuthority)
@@ -155,23 +239,17 @@ public class GameManager : BaseCommonManager
             text.DOFade(0f, 0.3f).SetDelay(0.3f);
         });
     }
-  /*  유틸함수로 바꿔서 필요 없을드? 일단주석
-   *  
-   *  public Putter GetMyPutter()
-    {
-        var myRef = Runner.LocalPlayer;
-
-        if (ObjectByRef.TryGet(myRef, out var putter))
-        {
-            return putter;
-        }
-        return null;
-    }*/
     public override void FixedUpdateNetwork() {
         if (!Object.HasStateAuthority) return;
 
         switch (CurrentStatus)
         {
+            case GameStatus.RoundEndWait:
+                if (RoundEndWaitTimer.Expired(Runner))
+                {
+                    CurrentStatus = GameStatus.RoundEnd;
+                }
+                break;
             case GameStatus.RoundEnd:
                 ScoreBoardTimer = TickTimer.CreateFromSeconds(Runner, 5);
                 Rpc_CurrentRoundScoreBoard();
@@ -182,10 +260,11 @@ public class GameManager : BaseCommonManager
                 int remainSec = Common_Utils.GetRemainingSecondsInt(ScoreBoardTimer, Runner);
                 if (remainSec >= 0)
                 {
-                    Debug.Log($"남은 시간: {remainSec}초");
+                    //Debug.Log($"스코어 보드 꺼지기 까지: {remainSec}초");
                 }
                 if (ScoreBoardTimer.Expired(Runner))
                 {
+                    if (CurrentRound >= 1) {CurrentStatus = GameStatus.GameEnd;  break; }
                     CurrentRound++;
                     // 기존 맵 제거
                     if (_currentLevel != null)
@@ -196,28 +275,15 @@ public class GameManager : BaseCommonManager
                     _currentLevel = Runner.Spawn(Levels[CurrentRound]);
 
                     Rpc_PlayerSpawnPosition();
+                    RoundStartTimer = TickTimer.CreateFromSeconds(Runner, 5);
+                    _prevCountdown = -999;
                     CurrentStatus = GameStatus.Playing;
                 }
                 break;
-
-         /*   case GameStatus.Result:
-                if (RoundEndTimer.Expired(Runner))
-                {
-                    Phase = GameStatus.Transition;
-                    // ex: 맵 교체, 캐릭터 재배치
-                    PrepareNextRound();
-                }
+            case GameStatus.GameEnd:
+                // TO DO 결산 및 종료
+                Debug.Log("게임종료");
                 break;
-
-            case GameStatus.Transition:
-                // 모두 준비되었는지 확인 후 다음 라운드로
-                if (EveryoneReady())
-                {
-                    CurrentRound++;
-                    Phase = GameStatus.Countdown;
-                    RoundStartTimer = TickTimer.CreateFromSeconds(Runner, _roundStartTimerInit);
-                }
-                break;*/
         }
     }
 
@@ -251,7 +317,6 @@ public class GameManager : BaseCommonManager
 
         myplayer.TeleportTo(new Vector3(0,3,0));
         myplayer.Strokes = 0;
-        myplayer.TimeTaken = -1;
         myplayer.controlFlag = false;
         myplayer.rb.linearVelocity = Vector3.zero;
         myplayer.rb.angularVelocity = Vector3.zero;
@@ -276,10 +341,7 @@ public class GameManager : BaseCommonManager
     {
         // 향후 구현 예정
     }
-    private void temp()
-    {
-
-    }
+ 
     private void OnDestroy()
     {
         if (instance == this)

@@ -45,6 +45,7 @@ public abstract class BaseCommonManager : NetworkBehaviour, IStateAuthorityChang
     }
     private IEnumerator WaitAndRegister(PlayerRef player)
     {
+        Debug.Log(player.ToString());
         yield return new WaitUntil(() => Runner.TryGetPlayerObject(player, out var obj));
         var obj = Runner.GetPlayerObject(player);
         if (obj.TryGetComponent<Putter>(out var putter) && !ObjectByRef.ContainsKey(player))

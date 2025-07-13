@@ -25,7 +25,7 @@ public class PlayerSpawner : SimulationBehaviour, IPlayerJoined, IPlayerLeft
 
 				Debug.Log("Spawning player");
 
-            Vector3 loc = new Vector3(0f, 0.05f, 0f);   // 지면보다 5 cm 위
+            Vector3 loc = new Vector3(0f, 3f, 0f);   // 지면보다 5 cm 위
             Runner.SpawnAsync(
 					prefab: PlayerPrefab,
 					position: loc,

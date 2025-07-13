@@ -182,7 +182,17 @@ if (RoundEndTimer.IsRunning && RoundEndTimer.Expired(Runner))
  - 러너는 전역 변수?
    ㄴ Runner는 MatchMng 에서 생성하며 거의 전역변수 처럼 공개적이기 때문에 어디서든 접근이 가능함
 
+ - ★ 플레이어를 대표하는 네트워크 오브젝트란? (Runner.SetPlayerObject)
+    Fusion에서는 플레이어를 대표할 수 있는 네트워크 오브젝트를 지정하는 기능이 있다.
+    예를 들어, 스포너에서 플레이어를 생성할 때 Runner.SetPlayerObject(Runner.LocalPlayer, putterObj)처럼 호출하면, 해당 오브젝트가 해당 플레이어를 대표하는 네트워크 오브젝트로 설정된다.
 
+    보통 이 오브젝트에는 Putter 스크립트가 붙어 있고, 실제로도 이 오브젝트가 플레이어를 가장 잘 대표하는 객체이기 때문에 적절하다.
+
+    SetPlayerObject를 사용하면 플레이어가 정상적으로 스폰되었는지 확인할 수 있는 장점이 있다.
+    예를 들어 다음과 같이 사용할 수 있다:
+
+    yield return new WaitUntil(() => Runner.TryGetPlayerObject(Object.StateAuthority, out _));
+    이렇게 하면 특정 플레이어의 대표 오브젝트가 생성되었는지를 실시간으로 확인할 수 있으며, 다른 클라이언트들이 모두 제대로 입장했는지도 체크할 수 있다.
 
 ===============================
 파이어베이스 공통
