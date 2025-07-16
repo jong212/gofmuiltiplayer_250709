@@ -12,13 +12,15 @@ public class DownMng : MonoBehaviour
     public GameObject waitMessage;
     public GameObject downMessage;
 
+    public GameObject LoginButtonObj;
+    public GameObject FileDownButtonObj;
+
     public Scrollbar downSlider;
     public Text sizeInfoText; 
     public Text downValText;
 
     [Header("Label")]
     public AssetLabelReference Test;
-    public AssetLabelReference Map;
 
     private long patchSize;
     private Dictionary<string, long> patchMap = new Dictionary<string, long>();
@@ -42,7 +44,7 @@ public class DownMng : MonoBehaviour
 
     IEnumerator CheckUpdateFiles()
     {
-        var labels = new List<string>() {Test.labelString, Map.labelString };
+        var labels = new List<string>() {Test.labelString};
         patchSize = default;
 
         foreach (var label in labels)
@@ -63,6 +65,7 @@ public class DownMng : MonoBehaviour
             downMessage.SetActive(true);                // 다운 받아야 할 파일 있다는 팝업 오픈
             Debug.Log("[2 DownManager : 서버에서 다운로드 해야 할 리소스 파일 확인 됨]");
             sizeInfoText.text = GetFileSize(patchSize); // 다운 받아야할 크기 UI 표시
+            FileDownButtonObj.gameObject.SetActive(true);
 
         }
         else // 다운 받을 게 없으면 씬 변경
@@ -71,6 +74,7 @@ public class DownMng : MonoBehaviour
             downSlider.size = 1f;
             yield return new WaitForSeconds(2f);
             Debug.Log("[2 LobbyManager : 다운로드 할 리소스 파일 없음 ]");
+            LoginButtonObj.gameObject.SetActive(true);
             //LoadingManager.LoadScene("4Login");
         }
 
@@ -78,24 +82,27 @@ public class DownMng : MonoBehaviour
     private string GetFileSize(long byteCnt)
     {
         string size = "0 Bytes";
-        if (byteCnt >= 1073741824.0)
+
+        if (byteCnt >= 1073741824) // 1 GB
         {
-            size = string.Format("{0:##.##}", byteCnt / 1073741824.0 + " GB");
+            size = string.Format("{0:##.##} GB", byteCnt / 1073741824.0);
         }
-        else if (byteCnt >= 1048576.0)
+        else if (byteCnt >= 1048576) // 1 MB
         {
-            size = string.Format("{0:##.##}", byteCnt / 1048576.0 + " MB");
+            size = string.Format("{0:##.##} MB", byteCnt / 1048576.0);
         }
-        else if (byteCnt >= 1024.0)
+        else if (byteCnt >= 1024) // 1 KB
         {
-            size = string.Format("{0:##.##}", byteCnt / 1024.0 + " KB");
+            size = string.Format("{0:##.##} KB", byteCnt / 1024.0);
         }
-        else if (byteCnt > 0 && byteCnt < 1024.0)
+        else if (byteCnt > 0)
         {
-            size = byteCnt.ToString() + " Bytes";
+            size = byteCnt + " Bytes";
         }
+
         return size;
     }
+
 
     public void Button_DownLoad()
     {
@@ -108,7 +115,7 @@ public class DownMng : MonoBehaviour
         이 중에서 프리팹 1에만 "default" 라벨이 설정되어 있고, 프리팹 2는 라벨이 설정되지 않은 상태라고 합시다.
         이 경우, Addressables.GetDownloadSizeAsync("default")를 호출하면 "default" 라벨이 설정된 리소스만 다운로드할 크기를 확인하게 됨. 즉, 프리팹 1만 다운로드 대상이 되고, 프리팹 2는 무시.        
         */
-        var labels = new List<string>() { Test.labelString, Map.labelString };
+        var labels = new List<string>() { Test.labelString};
 
         foreach (var label in labels)
         {
@@ -124,7 +131,9 @@ public class DownMng : MonoBehaviour
     }
     IEnumerator DownLoadLabel(string label)
     {
-        patchMap.Add(label, 0);
+        if (!patchMap.ContainsKey(label))
+            patchMap.Add(label, 0);
+
         var handle = Addressables.DownloadDependenciesAsync(label, false);//false는 다운로드 후 리소스를 자동으로 로드하지 않겠다는 설정
         while (!handle.IsDone)
         {
@@ -161,7 +170,7 @@ public class DownMng : MonoBehaviour
                 // 모든 비동기 작업이 완료되었는지 확인
 
                 // 씬 비동기로 로드
-                
+                LoginButtonObj.gameObject.SetActive(true);
                 //yield return StartCoroutine(LoadSceneAsync("4Login"));
                 break;
             }

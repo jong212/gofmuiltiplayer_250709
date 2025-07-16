@@ -226,8 +226,21 @@ public class LoginWithGoogle : MonoBehaviour
              c = snap.GetValue<int>("coins");
             Debug.Log(c);
         }
+        StartCoroutine(AddressableMng.instance.InitializeAllPrefabs(
+            new List<string> { "Test" },
+            () => {
+                Debug.Log("모든 어드레서블 프리팹 캐싱 완료!");
 
-        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex + 1);
+                StartCoroutine(LoadSceneAsync("Preloader"));
+            }
+        ));        
     }
-
+    IEnumerator LoadSceneAsync(string sceneName)
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        while (!asyncLoad.isDone)
+        {
+            yield return null;  // 씬 로드가 완료될 때까지 대기
+        }
+    }
 }

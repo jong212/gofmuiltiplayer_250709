@@ -5,13 +5,13 @@ using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.U2D;
-//https://chatgpt.com/share/671545ed-6cd0-800b-ae52-d92b932c3177
+
 public class AddressableMng : MonoBehaviour
 {
     public static AddressableMng instance;
+
     private Dictionary<string, List<GameObject>> prefabCache = new Dictionary<string, List<GameObject>>();
     private Dictionary<string, SpriteAtlas> spriteCache = new Dictionary<string, SpriteAtlas>();
-
 
     private void Awake()
     {
@@ -22,155 +22,155 @@ public class AddressableMng : MonoBehaviour
         }
         instance = this;
     }
-    // 넣은 라벨값에 해당하는 어드레서블에셋들을 "로드" 및 "캐싱"
-    // 딕셔너리에 키 = 라벨이름 , 값 = 프리팹 이름 으로 맵핑 해서 오브젝트 추가함
-    public void LoadPrefabsWithLabel(string label, System.Action onLoaded)
+
+    /// <summary>
+    /// 라벨 리스트에 해당하는 프리팹들을 전부 미리 로드하여 캐싱함 (로딩 씬에서 1회 호출 권장)
+    /// </summary>
+    public IEnumerator InitializeAllPrefabs(List<string> labelsToPreload, Action onDone)
     {
-        Addressables.LoadAssetsAsync<GameObject>(label, null).Completed += handle =>
+        //yield return null;
+        foreach (var label in labelsToPreload)
         {
-            if (handle.Status == AsyncOperationStatus.Succeeded)
+            if (!prefabCache.ContainsKey(label))
             {
-                if (!prefabCache.ContainsKey(label))
-                {
-                    prefabCache[label] = new List<GameObject>();
-                }
+                yield return LoadPrefabsWithLabelCoroutine(label);
+            }
+        }
 
-                foreach (var prefab in handle.Result) // 이 handle 사용법을 잘 익허야 할듯 디버그 해보니 내가 메모리 로드 및 인스턴스 한 오브젝트를 배열로도 가져온 것을 확인함 swoard1...2...3 그래서 그 이후 아래에서 캐싱 하는듯
-                {
-                    prefabCache[label].Add(prefab);
-                    Debug.Log(" [어드레서블 로드 후 캐싱 완료] :" + prefab.name);
-                }
-                onLoaded?.Invoke();
-            }
-            else
-            {
-                Debug.LogError($"Failed to load prefabs with label '{label}' from Addressables: {handle.OperationException}");
-            }
-        };
+        onDone?.Invoke();
     }
-    public IEnumerator LoadPrefabsWithLabels(string label)
-    {
-        Debug.Log("AddressableManager => 코루틴 => [몬스터 스폰 과정 순서 3]");
 
+    /// <summary>
+    /// 코루틴 기반의 프리팹 로드 및 캐싱
+    /// </summary>
+    private IEnumerator LoadPrefabsWithLabelCoroutine(string label)
+    {
         var handle = Addressables.LoadAssetsAsync<GameObject>(label, null);
         yield return handle;
-        Debug.Log("AddressableManager => 코루틴 => [몬스터 스폰 과정 순서 5]");
 
         if (handle.Status == AsyncOperationStatus.Succeeded)
         {
             if (!prefabCache.ContainsKey(label))
-            {
                 prefabCache[label] = new List<GameObject>();
-            }
 
             foreach (var prefab in handle.Result)
             {
-                prefabCache[label].Add(prefab);
-                Debug.Log(" AddressableManager => 코루틴 => [어드레서블 로드 후 캐싱 완료] :" + prefab.name);
+                if (!prefabCache[label].Contains(prefab))
+                {
+                    prefabCache[label].Add(prefab);
+                    Debug.Log($"[어드레서블 캐싱 완료] {label} - {prefab.name}");
+                }
             }
         }
         else
         {
-            Debug.LogError($"Failed to load prefabs with label '{label}' from Addressables: {handle.OperationException}");
+            Debug.LogError($"[어드레서블 로드 실패] {label}: {handle.OperationException}");
         }
     }
 
-    // (라벨 값 매게 변수로 받고) 오브젝트들 리스트 형태로 반환 함
+    /// <summary>
+    /// 라벨에 해당하는 캐싱된 모든 프리팹 리스트 반환
+    /// </summary>
     public List<GameObject> GetPrefabsByLabel(string label)
     {
-        if (prefabCache.TryGetValue(label, out List<GameObject> prefabs))
+        if (prefabCache.TryGetValue(label, out var prefabs))
         {
             return prefabs;
         }
-        Debug.LogError($"No prefabs found with label: {label}");
+
+        Debug.LogError($"[프리팹 없음] 라벨: {label}");
         return new List<GameObject>();
     }
 
-    //(라벨값,프리펩이름 매게 변수로 받고) 캐싱 된 단일 오브젝트를 프리팹 이름으로 찾아서 반환 
-
+    /// <summary>
+    /// 라벨과 이름으로 특정 프리팹 반환
+    /// </summary>
     public GameObject GetPrefab(string label, string prefabName)
     {
-        if (prefabCache.TryGetValue(label, out List<GameObject> prefabs))
+        if (prefabCache.TryGetValue(label, out var prefabs))
         {
             foreach (var prefab in prefabs)
             {
                 if (prefab.name == prefabName)
-                {
                     return prefab;
-                }
             }
-            Debug.LogError($"Prefab '{prefabName}' not found under label '{label}'.");
+
+            Debug.LogError($"[프리팹 이름 없음] '{prefabName}' under label '{label}'");
             return null;
         }
-        Debug.LogError($"No prefabs found with label: {label}");
+
+        Debug.LogError($"[프리팹 없음] 라벨: {label}");
         return null;
     }
-    // Release a Prefab (optional for memory management)
+
+    /// <summary>
+    /// 특정 라벨의 프리팹 캐시 해제
+    /// </summary>
     public void ReleasePrefabsByLabel(string label)
     {
-        if (prefabCache.TryGetValue(label, out List<GameObject> prefabs))
+        if (prefabCache.TryGetValue(label, out var prefabs))
         {
             foreach (var prefab in prefabs)
             {
                 Addressables.Release(prefab);
             }
             prefabCache.Remove(label);
-            Debug.Log($"All prefabs with label '{label}' released.");
-        }
-        else
-        {
-            Debug.LogWarning($"No prefabs found with label: {label} to release.");
+            Debug.Log($"[프리팹 해제 완료] 라벨: {label}");
         }
     }
+
+    /// <summary>
+    /// 스프라이트 아틀라스 로드 및 캐싱
+    /// </summary>
     public void LoadSpritesWithLabel(string label, Action onLoaded)
     {
         Addressables.LoadAssetsAsync<SpriteAtlas>(label, null).Completed += handle =>
         {
             if (handle.Status == AsyncOperationStatus.Succeeded)
             {
-                foreach (var sprite in handle.Result)
+                foreach (var atlas in handle.Result)
                 {
-                    if (!spriteCache.ContainsKey(sprite.name))
+                    if (!spriteCache.ContainsKey(atlas.name))
                     {
-                        spriteCache[sprite.name] = sprite;
-                        Debug.Log($"[스프라이트 로드 및 캐싱 완료] : {sprite.name}");
+                        spriteCache[atlas.name] = atlas;
+                        Debug.Log($"[스프라이트 캐싱 완료] : {atlas.name}");
                     }
                 }
                 onLoaded?.Invoke();
             }
             else
             {
-                Debug.LogError($"Failed to load sprites with label '{label}': {handle.OperationException}");
+                Debug.LogError($"[스프라이트 로드 실패] 라벨 '{label}': {handle.OperationException}");
             }
         };
     }
+
+    /// <summary>
+    /// 스프라이트 이름으로 가져오기 (캐싱된 SpriteAtlas 기준)
+    /// </summary>
     public Sprite GetSprite(string spriteName)
     {
-        if (spriteCache.TryGetValue("New Sprite Atlas", out SpriteAtlas sprite))
+        foreach (var atlas in spriteCache.Values)
         {
-            return sprite.GetSprite(spriteName);
+            Sprite sprite = atlas.GetSprite(spriteName);
+            if (sprite != null)
+                return sprite;
         }
-        Debug.LogError($"Sprite '{spriteName}' not found in cache.");
+
+        Debug.LogError($"[스프라이트 없음] 이름: {spriteName}");
         return null;
     }
-    public void ReleaseSprites()
+
+    /// <summary>
+    /// 모든 스프라이트 아틀라스 해제
+    /// </summary>
+    public void ReleaseAllSprites()
     {
-        foreach (var sprite in spriteCache.Values)
+        foreach (var atlas in spriteCache.Values)
         {
-            Addressables.Release(sprite);
+            Addressables.Release(atlas);
         }
         spriteCache.Clear();
-        Debug.Log("All cached sprites released.");
+        Debug.Log("[스프라이트 해제 완료]");
     }
-    /*
-        SpriteManager.instance.LoadSpritesWithLabel("MyLabel", () =>
-    {
-        Debug.Log("모든 스프라이트 로드 및 캐싱 완료");
-    });
-    Sprite mySprite = SpriteManager.instance.GetSprite("SpriteName");
-    if (mySprite != null)
-    {
-        // 스프라이트를 사용할 수 있습니다.
-    }
-    */
 }
