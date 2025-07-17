@@ -8,7 +8,7 @@ public class Singleton : MonoBehaviour
 
     private void Awake()
     {
-      /*  if (Instance != null && Instance != this)
+       if (Instance != null && Instance != this)
         { 
             Destroy(this.gameObject); // 이게 더 안전합니다
             return;
@@ -17,7 +17,7 @@ public class Singleton : MonoBehaviour
         Instance = this;
         DontDestroyOnLoad(this.gameObject); // ✅ 씬이 바뀌어도 살아있게 만듦
 
-        login_Mng = GetComponentInChildren<LoginWithGoogle>();
+       /* login_Mng = GetComponentInChildren<LoginWithGoogle>();
         login_Mng.Init(); */
     }
 }

@@ -1,10 +1,13 @@
 ﻿using Fusion;
 using System.Collections;
+using System.Security.Cryptography;
 using UnityEngine;
+using UnityEngine.AddressableAssets;
+using UnityEngine.ResourceManagement.AsyncOperations;
 
 public class PlayerSpawner : SimulationBehaviour, IPlayerJoined, IPlayerLeft
 {
-	[field: SerializeField] public GameObject PlayerPrefab { get; private set; }
+	//[field: SerializeField] public GameObject PlayerPrefab { get; private set; }
 
 	public void PlayerJoined(PlayerRef player)
 	{
@@ -23,15 +26,46 @@ public class PlayerSpawner : SimulationBehaviour, IPlayerJoined, IPlayerLeft
 			yield return new WaitUntil(() => GameManager.instance != null);
 			yield return new WaitForEndOfFrame();
 
-				Debug.Log("Spawning player");
+            var handle = Addressables.LoadAssetAsync<GameObject>("Player"); // Addressables에 등록한 키 또는 주소
+            yield return handle;
+
+            if (handle.Status != AsyncOperationStatus.Succeeded)
+            {
+                Debug.LogError("PlayerPrefab 로드 실패");
+                yield break;
+            }
+
+
+
+            GameObject playerPrefab = handle.Result;
+            var renderer = playerPrefab.GetComponentInChildren<MeshRenderer>();
+            if (renderer != null && AddressableMng.instance.materialCache.TryGetValue("GolfGreen", out var mat))
+            {
+                renderer.sharedMaterial = mat; // sharedMaterial 사용해야 원형에 적용됨
+                Debug.Log("✅ 머테리얼 적용 완료");
+            }
+            else
+            {
+                Debug.LogWarning("❌ 머테리얼 적용 실패");
+            }
+
+            Debug.Log("Spawning player");
 
             Vector3 loc = new Vector3(0f, 3f, 0f);   // 지면보다 5 cm 위
             Runner.SpawnAsync(
-					prefab: PlayerPrefab,
+
+					prefab: playerPrefab,
 					position: loc,
 					rotation: Quaternion.identity, // ⬅️ 강제로 (0,0,0) 회전
                     inputAuthority: player,
-					onCompleted: (res) => { if (res.IsSpawned) { Runner.SetPlayerObject(Runner.LocalPlayer, res.Object); } }
+					onCompleted: (res) => { 
+						if (res.IsSpawned) { 
+							Runner.SetPlayerObject(Runner.LocalPlayer, res.Object);
+                            //AddressableMng.instance.ApplyMaterialTo(res.Object.gameObject, "GolfGreen");
+
+                        }
+
+                    }
 				);
 			
 		}

@@ -36,7 +36,6 @@ public class GameManager : BaseCommonManager
     [Header("State")]
     [Networked] public GameStatus CurrentStatus { get; set; }
     [Networked] public int CurrentRound { get; set; }             // 현재 라운드
-    private bool _startTimerInitialized = false;
 
     public override void Spawned()
     {

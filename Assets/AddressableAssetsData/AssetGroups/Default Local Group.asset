@@ -15,35 +15,53 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: fb77703cdfbc25e44ab12920cd85687c
   m_SerializeEntries:
-  - m_GUID: 3f850e2522c8d6e4db2805801fa369a5
-    m_Address: Assets/Art/UI/BoxThing2.png
+  - m_GUID: 483588457e5cfc343813735c5837680f
+    m_Address: Player
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Test
+    - player
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 48b2e06210836bf4699e5ba35a251e9f
-    m_Address: Assets/Art/UI/WhiteRing.png
+  - m_GUID: 64e3fd24a3ff0284aa91e5877d11afe2
+    m_Address: GolfGreen
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Test
+    - ballskin
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6a87ba9b0804b854e875ab90fb748119
+    m_Address: Hole
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ballskin
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 733e50406e4be7546bb68d7ad677ea22
-    m_Address: Assets/Art/Wall.prefab
+    m_Address: Wall
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Test
+    - player
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 803e9f5f774726c4da39cf2fed80da39
+    m_Address: Border
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ballskin
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 850080602b95efc42bf2555371180305
+    m_Address: Wood
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ballskin
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 86ad2efe35365764883f1d18ba1738e5
-    m_Address: Assets/Art/Conveyor.prefab
+    m_Address: Conveyor
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Test
+    - player
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: f4a99ab747ee29249bb6b9fcf5d30cad
-    m_Address: Assets/Art/Grass.prefab
+    m_Address: Grass
     m_ReadOnly: 0
     m_SerializedLabels:
-    - Test
+    - player
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: e5c0246bd1d3d3f42949dd3a07db0baa, type: 2}

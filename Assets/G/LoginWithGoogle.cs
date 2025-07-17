@@ -176,7 +176,6 @@ public class LoginWithGoogle : MonoBehaviour
     }
     private void Update()
     {
-        if(c != null) { Debug.Log(c); }
     }
 
     // 아래 다 테스트 코드임 (PC용)
@@ -226,8 +225,10 @@ public class LoginWithGoogle : MonoBehaviour
              c = snap.GetValue<int>("coins");
             Debug.Log(c);
         }
-        StartCoroutine(AddressableMng.instance.InitializeAllPrefabs(
-            new List<string> { "Test" },
+        StartCoroutine(AddressableMng.instance.InitializeAllAssets(
+            new List<string> { "player" }, 
+            new List<string> { "ballskin" }, 
+            
             () => {
                 Debug.Log("모든 어드레서블 프리팹 캐싱 완료!");
 
@@ -242,5 +243,19 @@ public class LoginWithGoogle : MonoBehaviour
         {
             yield return null;  // 씬 로드가 완료될 때까지 대기
         }
+    }
+
+    public void temp()
+    {
+        StartCoroutine(AddressableMng.instance.InitializeAllAssets(
+           new List<string> { "player" },
+           new List<string> { "ballskin" },
+
+           () => {
+               Debug.Log("모든 어드레서블 프리팹 캐싱 완료!");
+
+               StartCoroutine(LoadSceneAsync("Preloader"));
+           }
+       ));
     }
 }

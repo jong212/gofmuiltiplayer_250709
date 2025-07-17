@@ -1,3 +1,4 @@
+ï»¿// AddressableMng.cs
 using System;
 using System.Collections;
 using System.Collections.Generic;
@@ -10,8 +11,14 @@ public class AddressableMng : MonoBehaviour
 {
     public static AddressableMng instance;
 
-    private Dictionary<string, List<GameObject>> prefabCache = new Dictionary<string, List<GameObject>>();
-    private Dictionary<string, SpriteAtlas> spriteCache = new Dictionary<string, SpriteAtlas>();
+    public Dictionary<string, List<GameObject>> prefabCache = new();
+    private Dictionary<string, AsyncOperationHandle<IList<GameObject>>> prefabHandles = new();
+
+    public Dictionary<string, Material> materialCache = new();
+    private Dictionary<string, AsyncOperationHandle<IList<Material>>> materialHandles = new();
+
+    /*private Dictionary<string, SpriteAtlas> spriteCache = new();
+    private Dictionary<string, AsyncOperationHandle<IList<SpriteAtlas>>> spriteHandles = new();*/
 
     private void Awake()
     {
@@ -23,154 +30,148 @@ public class AddressableMng : MonoBehaviour
         instance = this;
     }
 
-    /// <summary>
-    /// ¶óº§ ¸®½ºÆ®¿¡ ÇØ´çÇÏ´Â ÇÁ¸®ÆÕµéÀ» ÀüºÎ ¹Ì¸® ·ÎµåÇÏ¿© Ä³½ÌÇÔ (·Îµù ¾À¿¡¼­ 1È¸ È£Ãâ ±ÇÀå)
-    /// </summary>
-    public IEnumerator InitializeAllPrefabs(List<string> labelsToPreload, Action onDone)
+    public IEnumerator InitializeAllAssets(List<string> prefabLabels, List<string> materialLabels, Action onDone = null)
     {
-        //yield return null;
-        foreach (var label in labelsToPreload)
-        {
-            if (!prefabCache.ContainsKey(label))
-            {
-                yield return LoadPrefabsWithLabelCoroutine(label);
-            }
-        }
-
-        onDone?.Invoke();
+        if (prefabLabels != null) yield return InitializeAllPrefabs(prefabLabels);
+        if (materialLabels != null) yield return InitializeAllMaterials(materialLabels);
+/*        if (spriteLabels != null) yield return InitializeAllSpriteAtlases(spriteLabels);
+*/        onDone?.Invoke();
     }
 
-    /// <summary>
-    /// ÄÚ·çÆ¾ ±â¹İÀÇ ÇÁ¸®ÆÕ ·Îµå ¹× Ä³½Ì
-    /// </summary>
-    private IEnumerator LoadPrefabsWithLabelCoroutine(string label)
+    public IEnumerator InitializeAllPrefabs(List<string> labels)
     {
-        var handle = Addressables.LoadAssetsAsync<GameObject>(label, null);
-        yield return handle;
-
-        if (handle.Status == AsyncOperationStatus.Succeeded)
+        foreach (var label in labels)
         {
             if (!prefabCache.ContainsKey(label))
-                prefabCache[label] = new List<GameObject>();
-
-            foreach (var prefab in handle.Result)
             {
-                if (!prefabCache[label].Contains(prefab))
+                var handle = Addressables.LoadAssetsAsync<GameObject>(label, null);
+                yield return handle;
+
+                if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
-                    prefabCache[label].Add(prefab);
-                    Debug.Log($"[¾îµå·¹¼­ºí Ä³½Ì ¿Ï·á] {label} - {prefab.name}");
+                    prefabHandles[label] = handle;
+                    prefabCache[label] = new List<GameObject>(handle.Result);
+                    Debug.Log($"[í”„ë¦¬íŒ¹ ë¡œë“œ ì™„ë£Œ] {label}");
+                }
+                else
+                {
+                    Debug.LogError($"[í”„ë¦¬íŒ¹ ë¡œë“œ ì‹¤íŒ¨] {label}: {handle.OperationException}");
                 }
             }
         }
-        else
-        {
-            Debug.LogError($"[¾îµå·¹¼­ºí ·Îµå ½ÇÆĞ] {label}: {handle.OperationException}");
-        }
     }
 
-    /// <summary>
-    /// ¶óº§¿¡ ÇØ´çÇÏ´Â Ä³½ÌµÈ ¸ğµç ÇÁ¸®ÆÕ ¸®½ºÆ® ¹İÈ¯
-    /// </summary>
-    public List<GameObject> GetPrefabsByLabel(string label)
+    public IEnumerator InitializeAllMaterials(List<string> labels)
     {
-        if (prefabCache.TryGetValue(label, out var prefabs))
+        foreach (var label in labels)
         {
-            return prefabs;
+            if (!materialHandles.ContainsKey(label))
+            {
+                var handle = Addressables.LoadAssetsAsync<Material>(label, null);
+                yield return handle;
+
+                if (handle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    materialHandles[label] = handle;
+                    foreach (var mat in handle.Result)
+                        materialCache[mat.name] = mat;
+                    Debug.Log($"[ë¨¸í‹°ë¦¬ì–¼ ë¡œë“œ ì™„ë£Œ] {label}");
+                }
+                else
+                {
+                    Debug.LogError($"[ë¨¸í‹°ë¦¬ì–¼ ë¡œë“œ ì‹¤íŒ¨] {label}: {handle.OperationException}");
+                }
+            }
         }
-
-        Debug.LogError($"[ÇÁ¸®ÆÕ ¾øÀ½] ¶óº§: {label}");
-        return new List<GameObject>();
     }
+/*
+    public IEnumerator InitializeAllSpriteAtlases(List<string> labels)
+    {
+        foreach (var label in labels)
+        {
+            if (!spriteHandles.ContainsKey(label))
+            {
+                var handle = Addressables.LoadAssetsAsync<SpriteAtlas>(label, null);
+                yield return handle;
 
-    /// <summary>
-    /// ¶óº§°ú ÀÌ¸§À¸·Î Æ¯Á¤ ÇÁ¸®ÆÕ ¹İÈ¯
-    /// </summary>
+                if (handle.Status == AsyncOperationStatus.Succeeded)
+                {
+                    spriteHandles[label] = handle;
+                    foreach (var atlas in handle.Result)
+                        spriteCache[atlas.name] = atlas;
+                    Debug.Log($"[ìŠ¤í”„ë¼ì´íŠ¸ ì•„í‹€ë¼ìŠ¤ ë¡œë“œ ì™„ë£Œ] {label}");
+                }
+                else
+                {
+                    Debug.LogError($"[ìŠ¤í”„ë¼ì´íŠ¸ ì•„í‹€ë¼ìŠ¤ ë¡œë“œ ì‹¤íŒ¨] {label}: {handle.OperationException}");
+                }
+            }
+        }
+    }
+*/
     public GameObject GetPrefab(string label, string prefabName)
     {
-        if (prefabCache.TryGetValue(label, out var prefabs))
+        if (prefabCache.TryGetValue(label, out var list))
         {
-            foreach (var prefab in prefabs)
-            {
-                if (prefab.name == prefabName)
-                    return prefab;
-            }
+            return list.Find(p => p.name == prefabName);
+        }
+        return null;
+    }
 
-            Debug.LogError($"[ÇÁ¸®ÆÕ ÀÌ¸§ ¾øÀ½] '{prefabName}' under label '{label}'");
+    public Material GetMaterial(string name) => materialCache.TryGetValue(name, out var mat) ? mat : null;
+    /*
+        public Sprite GetSprite(string spriteName)
+        {
+            foreach (var atlas in spriteCache.Values)
+            {
+                var sprite = atlas.GetSprite(spriteName);
+                if (sprite != null) return sprite;
+            }
             return null;
+        }*/
+
+    public void ApplyMaterialTo(GameObject go, string materialName, bool instantiate = false)
+    {
+        if (!go)
+        {
+            Debug.LogError("[ApplyMaterialTo] GameObjectê°€ nullì„");
+            return;
         }
 
-        Debug.LogError($"[ÇÁ¸®ÆÕ ¾øÀ½] ¶óº§: {label}");
-        return null;
-    }
-
-    /// <summary>
-    /// Æ¯Á¤ ¶óº§ÀÇ ÇÁ¸®ÆÕ Ä³½Ã ÇØÁ¦
-    /// </summary>
-    public void ReleasePrefabsByLabel(string label)
-    {
-        if (prefabCache.TryGetValue(label, out var prefabs))
+        if (!materialCache.TryGetValue(materialName, out var mat))
         {
-            foreach (var prefab in prefabs)
-            {
-                Addressables.Release(prefab);
-            }
-            prefabCache.Remove(label);
-            Debug.Log($"[ÇÁ¸®ÆÕ ÇØÁ¦ ¿Ï·á] ¶óº§: {label}");
+            Debug.LogError($"[ApplyMaterialTo] '{materialName}' ë¨¸í‹°ë¦¬ì–¼ì„ ì°¾ì§€ ëª»í•¨");
+            return;
         }
-    }
 
-    /// <summary>
-    /// ½ºÇÁ¶óÀÌÆ® ¾ÆÆ²¶ó½º ·Îµå ¹× Ä³½Ì
-    /// </summary>
-    public void LoadSpritesWithLabel(string label, Action onLoaded)
-    {
-        Addressables.LoadAssetsAsync<SpriteAtlas>(label, null).Completed += handle =>
+        Debug.Log($"[ApplyMaterialTo] ë¨¸í‹°ë¦¬ì–¼ '{materialName}' ì ìš© ì‹œë„ ì¤‘");
+
+        var renderers = go.GetComponentsInChildren<MeshRenderer>(true);
+        Debug.Log($"[ApplyMaterialTo] Renderer ê°œìˆ˜: {renderers.Length}");
+
+        foreach (var renderer in renderers)
         {
-            if (handle.Status == AsyncOperationStatus.Succeeded)
-            {
-                foreach (var atlas in handle.Result)
-                {
-                    if (!spriteCache.ContainsKey(atlas.name))
-                    {
-                        spriteCache[atlas.name] = atlas;
-                        Debug.Log($"[½ºÇÁ¶óÀÌÆ® Ä³½Ì ¿Ï·á] : {atlas.name}");
-                    }
-                }
-                onLoaded?.Invoke();
-            }
+            Debug.Log($"[ApplyMaterialTo] ì ìš© ëŒ€ìƒ: {renderer.name}");
+
+            if (instantiate)
+                renderer.material = mat;
             else
-            {
-                Debug.LogError($"[½ºÇÁ¶óÀÌÆ® ·Îµå ½ÇÆĞ] ¶óº§ '{label}': {handle.OperationException}");
-            }
-        };
+                renderer.sharedMaterial = mat;
+        }
     }
 
-    /// <summary>
-    /// ½ºÇÁ¶óÀÌÆ® ÀÌ¸§À¸·Î °¡Á®¿À±â (Ä³½ÌµÈ SpriteAtlas ±âÁØ)
-    /// </summary>
-    public Sprite GetSprite(string spriteName)
-    {
-        foreach (var atlas in spriteCache.Values)
-        {
-            Sprite sprite = atlas.GetSprite(spriteName);
-            if (sprite != null)
-                return sprite;
-        }
 
-        Debug.LogError($"[½ºÇÁ¶óÀÌÆ® ¾øÀ½] ÀÌ¸§: {spriteName}");
-        return null;
-    }
-
-    /// <summary>
-    /// ¸ğµç ½ºÇÁ¶óÀÌÆ® ¾ÆÆ²¶ó½º ÇØÁ¦
-    /// </summary>
-    public void ReleaseAllSprites()
+    public void ReleaseEverything()
     {
-        foreach (var atlas in spriteCache.Values)
-        {
-            Addressables.Release(atlas);
-        }
-        spriteCache.Clear();
-        Debug.Log("[½ºÇÁ¶óÀÌÆ® ÇØÁ¦ ¿Ï·á]");
+        foreach (var h in prefabHandles.Values) Addressables.Release(h);
+        prefabHandles.Clear(); prefabCache.Clear();
+
+        foreach (var h in materialHandles.Values) Addressables.Release(h);
+        materialHandles.Clear(); materialCache.Clear();
+/*
+        foreach (var h in spriteHandles.Values) Addressables.Release(h);
+        spriteHandles.Clear(); spriteCache.Clear();
+*/
+        Debug.Log("[ì–´ë“œë ˆì„œë¸” ëª¨ë“  ìºì‹œ í•´ì œ ì™„ë£Œ]");
     }
 }
