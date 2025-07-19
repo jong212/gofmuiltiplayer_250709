@@ -12,8 +12,9 @@ public class DownMng : MonoBehaviour
     public GameObject waitMessage;
     public GameObject downMessage;
 
-    public GameObject LoginButtonObj;
+    public Button GoogleLoginBtn;
     public GameObject FileDownButtonObj;
+    public GameObject ParentObj;
 
     public Scrollbar downSlider;
     public Text sizeInfoText; 
@@ -25,7 +26,25 @@ public class DownMng : MonoBehaviour
 
     private long patchSize;
     private Dictionary<string, long> patchMap = new Dictionary<string, long>();
-    void Start()
+
+    public static DownMng instance;
+
+    private void Awake()
+    {
+        if (instance && instance != this)
+        {
+            Destroy(gameObject);
+            return;
+        }
+        instance = this;
+        FileDownButtonObj.GetComponent<Button>().onClick.AddListener(() => ManagerSystem.Instance.StepByCall("2_FileDownLoad"));
+    }
+    private void Start()
+    {
+        ParentObj.gameObject.SetActive(true);
+        ManagerSystem.Instance.StepByCall("1_FileDownCheck");
+    }
+    public void Step1()
     {
         waitMessage.SetActive(true);
         downMessage.SetActive(false);
@@ -34,15 +53,18 @@ public class DownMng : MonoBehaviour
 
         // 다운 받아야 하는 파일이 있는지 없는지 체크
         StartCoroutine(CheckUpdateFiles());
-
     }
+    public void Step2()
+    {
+        StartCoroutine(PatchFiles());
+    }
+
     IEnumerator InitAddressable()
     {
 
         var init = Addressables.InitializeAsync();
         yield return init;
     }
-
     IEnumerator CheckUpdateFiles()
     {
         var labels = new List<string>() {player.labelString,ballskin.labelString};
@@ -75,8 +97,12 @@ public class DownMng : MonoBehaviour
             downSlider.size = 1f;
             yield return new WaitForSeconds(2f);
             Debug.Log("[2 LobbyManager : 다운로드 할 리소스 파일 없음 ]");
-            LoginButtonObj.gameObject.SetActive(true);
-            //LoadingManager.LoadScene("4Login");
+            ManagerSystem.Instance.StepByCall("3_AddressableCashing", null,
+                () => {
+                    Debug.Log("모든 어드레서블 프리팹 캐싱 완료!");
+                    GoogleLoginBtn.gameObject.SetActive(true);
+                }
+            );
         }
 
     }
@@ -105,10 +131,6 @@ public class DownMng : MonoBehaviour
     }
 
 
-    public void Button_DownLoad()
-    {
-        StartCoroutine(PatchFiles());
-    }
     IEnumerator PatchFiles()
     {
         /*
@@ -166,26 +188,19 @@ public class DownMng : MonoBehaviour
             if (total >= patchSize)
             {
                 Debug.Log("[2-1 다운 완료]");
-
-
                 // 모든 비동기 작업이 완료되었는지 확인
-
                 // 씬 비동기로 로드
-                LoginButtonObj.gameObject.SetActive(true);
-                //yield return StartCoroutine(LoadSceneAsync("4Login"));
+                ManagerSystem.Instance.StepByCall("3_AddressableCashing",null,
+                    () => {
+                        Debug.Log("모든 어드레서블 프리팹 캐싱 완료!");
+                        GoogleLoginBtn.gameObject.SetActive(true);
+                    }
+                );
+
                 break;
             }
 
             yield return new WaitForEndOfFrame();
         }
-    }
-
-    IEnumerator LoadSceneAsync(string sceneName)
-    {
-        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
-        while (!asyncLoad.isDone)
-        {
-            yield return null;  // 씬 로드가 완료될 때까지 대기
-        }
-    }
+    } 
 }

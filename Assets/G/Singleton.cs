@@ -4,8 +4,8 @@ public class Singleton : MonoBehaviour
 {
     public static Singleton Instance { get; private set; }
 
-    public LoginWithGoogle login_Mng { get; private set; }
-
+/*    public LoginWithGoogle login_Mng { get; private set; }
+*/
     private void Awake()
     {
        if (Instance != null && Instance != this)

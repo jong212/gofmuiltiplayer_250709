@@ -1,3 +1,4 @@
+using BackEnd;
 using Fusion;
 using System.Collections.Generic;
 using UnityEngine;
@@ -11,6 +12,12 @@ public enum GameStatus
     NextRound,      // 다음 라운드 준비
     GameEnd, // 끝
 }
+
+
+
+
+
+
 
 public class Common_Utils 
 {
@@ -29,6 +36,9 @@ public class Common_Utils
         var remaining = timer.RemainingTime(runner);
         return remaining.HasValue ? Mathf.CeilToInt(remaining.Value) : -1;
     }
+
+
+
 }
 
 // 각 플레이어의 한 라운드 결과
