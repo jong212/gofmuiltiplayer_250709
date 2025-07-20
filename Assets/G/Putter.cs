@@ -1,6 +1,7 @@
 using Fusion;
 using System;
 using UnityEngine;
+using UnityEngine.InputSystem.HID;
 
 [Serializable]
 public struct RoundResultStruct : INetworkStruct
@@ -13,7 +14,10 @@ public class Putter : NetworkBehaviour
     [Header("Refs")]
     public Transform interpolationTarget;
     public Rigidbody rb;
+    public Transform Arrow;
+    public MeshRenderer ArrowMeshRenderer;
     new public SphereCollider collider;
+
 
     [Header("Putt Settings")]
     public float maxPuttStrength = 10f;
@@ -43,15 +47,24 @@ public class Putter : NetworkBehaviour
     public override void Render()
     {
         if (!Object.HasStateAuthority) return;
+        var scale = Arrow.localScale;
+        scale.z = CurrInput.dragDelta;
+        Arrow.rotation = Quaternion.Euler(0, (float)CurrInput.yaw, 0);
+
         if (CurrInput.isDragging)
         {
+            ArrowMeshRenderer.material.SetColor("_EmissionColor", InterfaceManager.instance.PuttChargeColor.Evaluate(CurrInput.dragDelta));
+            InterfaceManager.instance.ChargeCircle.color = InterfaceManager.instance.PuttChargeColor.Evaluate(CurrInput.dragDelta) ;
+
             InterfaceManager.instance.ChargeCircle.gameObject.SetActive(true);
             InterfaceManager.instance.ChargeCircle.fillAmount = CurrInput.dragDelta;
+            Arrow.localScale = scale;
         }
         else
         {
             InterfaceManager.instance.ChargeCircle.gameObject.SetActive(false);
             InterfaceManager.instance.ChargeCircle.fillAmount = CurrInput.dragDelta;
+            Arrow.localScale = scale;
         }
 
     }

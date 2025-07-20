@@ -39,7 +39,7 @@ public class ManagerSystem : MonoBehaviour
         MatchManager.Init();
     }
 
-    public void StepByCall(string type, string type2 = null,Action onLoaded = null)
+    public void StepByCall(string type, string type2 = null)
     {
         switch (type)
         {
@@ -50,13 +50,13 @@ public class ManagerSystem : MonoBehaviour
                 DownMng.instance.Step2();
                 break;
             case "3_AddressableCashing":
-                AddressableMng.instance.Step3(onLoaded);
+                AddressableMng.instance.Step3();
                 break;
             case "4_BackendInit":
                 BackendMng.Step4();
                 break;
             case "5_GoogleLoginBtnActive":
-                //DownMng.instance.ParentObj.gameObject.SetActive(false);
+                DownMng.instance.ParentObj.gameObject.SetActive(false);
                 LoginWithGoogle.instance.Step5();
                 break;
             case "6_CreateNickAndSetDefaultCharacterInfo":

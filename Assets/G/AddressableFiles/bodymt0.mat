@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: GolfGreen
+  m_Name: bodymt0
   m_Shader: {fileID: 4800000, guid: 4d1d14afba53a7044b3c33ff47bc98a2, type: 3}
   m_ShaderKeywords: 
   m_LightmapFlags: 4

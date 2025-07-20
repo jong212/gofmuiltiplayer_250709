@@ -26,20 +26,23 @@ public class PlayerSpawner : SimulationBehaviour, IPlayerJoined, IPlayerLeft
 			yield return new WaitUntil(() => GameManager.instance != null);
 			yield return new WaitForEndOfFrame();
 
-            var handle = Addressables.LoadAssetAsync<GameObject>("Player"); // Addressables에 등록한 키 또는 주소
-            yield return handle;
+            GameObject playerPrefab = AddressableMng.instance.GetPrefab("player", "Player");
 
-            if (handle.Status != AsyncOperationStatus.Succeeded)
+            if (playerPrefab == null)
             {
-                Debug.LogError("PlayerPrefab 로드 실패");
+                Debug.LogError("Player 프리팹을 캐시에서 찾지 못했습니다.");
                 yield break;
             }
 
+			// 난 1번 머테리얼 착용중임
+			var tempUserData = ManagerSystem.Instance.BackendCash.UserData;
 
+			// 그럼 1번 가져와
+			var tempMtData = ManagerSystem.Instance.BackendCash.ChartCharacter[tempUserData.SelectedCharId - 1];
 
-            GameObject playerPrefab = handle.Result;
+			// 
             var renderer = playerPrefab.GetComponentInChildren<MeshRenderer>();
-            if (renderer != null && AddressableMng.instance.materialCache.TryGetValue("GolfGreen", out var mat))
+            if (renderer != null && AddressableMng.instance.materialCache.TryGetValue(tempMtData.name, out var mat))
             {
                 renderer.sharedMaterial = mat; // sharedMaterial 사용해야 원형에 적용됨
                 Debug.Log("✅ 머테리얼 적용 완료");

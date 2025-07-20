@@ -71,16 +71,25 @@ public class BackendMng : MonoBehaviour
             if (gameDataJson.Count <= 0) // 받아온 데이터의 갯수가 0이라면 데이터가 존재하지 않는 것입니다.  
             {
                 Debug.LogWarning("데이터가 존재하지 않습니다.");
-                // GameDataInsert(0);
-                //GetPlayerData();
             } else
             {
                UserData tempdata = new UserData(gameDataJson);
                ManagerSystem.Instance.BackendCash.UserData = tempdata;
 
-                Debug.Log(ManagerSystem.Instance.BackendCash.UserData.ToString());
-                Debug.Log(ManagerSystem.Instance.BackendCash.ChartCharacter);
+                //Debug.Log(ManagerSystem.Instance.BackendCash.UserData.ToString());
+              /*  var chartList = ManagerSystem.Instance.BackendCash.ChartCharacter;
 
+                if (chartList == null || chartList.Count == 0)
+                {
+                    Debug.Log("ChartCharacter 리스트가 비어있음.");
+                }
+                else
+                {
+                    foreach (var c in chartList)
+                    {
+                        Debug.Log($"seq: {c.seq}, title: {c.title}, speed: {c.speed}, name: {c.name}, label: {c.label}");
+                    }
+                }*/
             }
         }
     }

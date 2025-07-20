@@ -97,11 +97,7 @@ public class DownMng : MonoBehaviour
             downSlider.size = 1f;
             yield return new WaitForSeconds(2f);
             Debug.Log("[2 LobbyManager : 다운로드 할 리소스 파일 없음 ]");
-            ManagerSystem.Instance.StepByCall("3_AddressableCashing", null,
-                () => {
-                    Debug.Log("모든 어드레서블 프리팹 캐싱 완료!");
-                    GoogleLoginBtn.gameObject.SetActive(true);
-                }
+            ManagerSystem.Instance.StepByCall("3_AddressableCashing", null
             );
         }
 
@@ -190,12 +186,7 @@ public class DownMng : MonoBehaviour
                 Debug.Log("[2-1 다운 완료]");
                 // 모든 비동기 작업이 완료되었는지 확인
                 // 씬 비동기로 로드
-                ManagerSystem.Instance.StepByCall("3_AddressableCashing",null,
-                    () => {
-                        Debug.Log("모든 어드레서블 프리팹 캐싱 완료!");
-                        GoogleLoginBtn.gameObject.SetActive(true);
-                    }
-                );
+                ManagerSystem.Instance.StepByCall("3_AddressableCashing",null );
 
                 break;
             }

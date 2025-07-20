@@ -500,7 +500,6 @@ Transform:
   - {fileID: 1732353410758608896}
   - {fileID: 1498753986315622071}
   - {fileID: 7188685075006987056}
-  - {fileID: 5882058910878798550}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &929388768792120974
@@ -780,50 +779,6 @@ MonoBehaviour:
   m_hasFontAssetChanged: 0
   m_baseMaterial: {fileID: 0}
   m_maskOffset: {x: 0, y: 0, z: 0, w: 0}
---- !u!1 &4735455917499912972
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 5882058910878798550}
-  - component: {fileID: 5102950755078450057}
-  m_Layer: 0
-  m_Name: mng_resource
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &5882058910878798550
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4735455917499912972}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 305914887785141029}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &5102950755078450057
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 4735455917499912972}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 57f78b29e80c48c4e88127b495d173f7, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
 --- !u!1 &5495583036084170737
 GameObject:
   m_ObjectHideFlags: 0
@@ -1130,6 +1085,36 @@ MonoBehaviour:
   coomPlayerCount: {fileID: 7422757651997374757}
   _joystick: {fileID: 694944198341527439, guid: 4478bce3f7ee04a468df03f5b14fb395, type: 3}
   ChargeCircle: {fileID: 8740866031644140811}
+  <PuttChargeColor>k__BackingField:
+    serializedVersion: 2
+    key0: {r: 0.4009434, g: 1, b: 0.41303363, a: 1}
+    key1: {r: 1, g: 0.9390574, b: 0.24056602, a: 1}
+    key2: {r: 1, g: 0.2688679, b: 0.2688679, a: 0}
+    key3: {r: 0, g: 0, b: 0, a: 0}
+    key4: {r: 0, g: 0, b: 0, a: 0}
+    key5: {r: 0, g: 0, b: 0, a: 0}
+    key6: {r: 0, g: 0, b: 0, a: 0}
+    key7: {r: 0, g: 0, b: 0, a: 0}
+    ctime0: 0
+    ctime1: 32960
+    ctime2: 65535
+    ctime3: 0
+    ctime4: 0
+    ctime5: 0
+    ctime6: 0
+    ctime7: 0
+    atime0: 0
+    atime1: 65535
+    atime2: 0
+    atime3: 0
+    atime4: 0
+    atime5: 0
+    atime6: 0
+    atime7: 0
+    m_Mode: 0
+    m_ColorSpace: -1
+    m_NumColorKeys: 3
+    m_NumAlphaKeys: 2
 --- !u!1 &8843828078775736713
 GameObject:
   m_ObjectHideFlags: 0

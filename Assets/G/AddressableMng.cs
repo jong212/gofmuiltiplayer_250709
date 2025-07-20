@@ -29,20 +29,19 @@ public class AddressableMng : MonoBehaviour
         }
         instance = this;
     }
-    public void Step3(Action onDone = null)
+    public void Step3()
     {
         StartCoroutine(InitializeAllAssets(
            new List<string> { "player" },
-           new List<string> { "ballskin" },
-           onDone
+           new List<string> { "ballskin" }
+          
        ));
     }
-    public IEnumerator InitializeAllAssets(List<string> prefabLabels, List<string> materialLabels, Action onDone = null)
+    public IEnumerator InitializeAllAssets(List<string> prefabLabels, List<string> materialLabels)
     {
         if (prefabLabels != null) yield return InitializeAllPrefabs(prefabLabels);
         if (materialLabels != null) yield return InitializeAllMaterials(materialLabels);
-/*        if (spriteLabels != null) yield return InitializeAllSpriteAtlases(spriteLabels);
-*/      onDone?.Invoke();
+
         ManagerSystem.Instance.StepByCall("4_BackendInit");
     }
 

@@ -30,6 +30,7 @@ public class InterfaceManager : MonoBehaviour
     public TextMeshProUGUI coomPlayerCount;
     public Joystick _joystick;
     public Image ChargeCircle;
+    [field: SerializeField] public Gradient PuttChargeColor { get; private set; }
 
     public void Init()
     {

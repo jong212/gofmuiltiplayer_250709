@@ -22,7 +22,7 @@ MonoBehaviour:
     - player
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 64e3fd24a3ff0284aa91e5877d11afe2
-    m_Address: GolfGreen
+    m_Address: Assets/G/AddressableFiles/bodymt0.mat
     m_ReadOnly: 0
     m_SerializedLabels:
     - ballskin
@@ -40,13 +40,13 @@ MonoBehaviour:
     - player
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 803e9f5f774726c4da39cf2fed80da39
-    m_Address: Border
+    m_Address: Assets/G/AddressableFiles/bodymt1.mat
     m_ReadOnly: 0
     m_SerializedLabels:
     - ballskin
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 850080602b95efc42bf2555371180305
-    m_Address: Wood
+    m_Address: Assets/G/AddressableFiles/bodymt2.mat
     m_ReadOnly: 0
     m_SerializedLabels:
     - ballskin
