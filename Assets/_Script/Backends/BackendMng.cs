@@ -75,21 +75,23 @@ public class BackendMng : MonoBehaviour
             {
                UserData tempdata = new UserData(gameDataJson);
                ManagerSystem.Instance.BackendCash.UserData = tempdata;
+               DownMng.instance.ParentObj.gameObject.SetActive(false);
+
 
                 //Debug.Log(ManagerSystem.Instance.BackendCash.UserData.ToString());
-              /*  var chartList = ManagerSystem.Instance.BackendCash.ChartCharacter;
+                /*  var chartList = ManagerSystem.Instance.BackendCash.ChartCharacter;
 
-                if (chartList == null || chartList.Count == 0)
-                {
-                    Debug.Log("ChartCharacter 리스트가 비어있음.");
-                }
-                else
-                {
-                    foreach (var c in chartList)
-                    {
-                        Debug.Log($"seq: {c.seq}, title: {c.title}, speed: {c.speed}, name: {c.name}, label: {c.label}");
-                    }
-                }*/
+                  if (chartList == null || chartList.Count == 0)
+                  {
+                      Debug.Log("ChartCharacter 리스트가 비어있음.");
+                  }
+                  else
+                  {
+                      foreach (var c in chartList)
+                      {
+                          Debug.Log($"seq: {c.seq}, title: {c.title}, speed: {c.speed}, name: {c.name}, label: {c.label}");
+                      }
+                  }*/
             }
         }
     }

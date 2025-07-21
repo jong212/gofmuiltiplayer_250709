@@ -2,12 +2,6 @@ using BackEnd;
 using LitJson;
 using System.Collections.Generic;
 using System.Text;
-using Unity.Android.Gradle.Manifest;
-using Unity.VisualScripting;
-using UnityEngine;
-using static TMPro.SpriteAssetUtilities.TexturePacker_JsonArray;
-using static Unity.VisualScripting.Dependencies.Sqlite.SQLite3;
-using static UnityEditor.Progress;
 
 #region 붕어빵 틀
 // 차트 매니저 파일의 row들을 담는용

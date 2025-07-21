@@ -1,4 +1,5 @@
 ﻿using BackEnd;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 using static TheBackend.ToolKit.GoogleLogin.Android;
@@ -7,8 +8,12 @@ public class LoginWithGoogle : MonoBehaviour {
     
     public static LoginWithGoogle instance;
     public GameObject LoginButton;
+
     public GameObject NickNameSetPanel;
-    public InputField Name_Input;
+    public TMP_InputField Name_Input;
+    public TextMeshProUGUI errorMsg;
+
+    public Transform NickUsePopup;
 
     private void Awake()
     {
@@ -46,23 +51,31 @@ public class LoginWithGoogle : MonoBehaviour {
             NickNameSetPanel.gameObject.SetActive(true);
         }
     }
-    void DuplicateCheckNick()
+    public void DuplicateCheckNick()
     {
         ManagerSystem.Instance.BackendMng.CheckNickName(Name_Input.text.ToString(), (isDuplicate) =>
         {
             if (isDuplicate)
             {
-                Debug.Log("닉네임 중복!");
+                errorMsg.text = "중복닉네임 입니다";
             }
             else
             {
-                Debug.Log("사용 가능!");
-                ManagerSystem.Instance.StepByCall("6_CreateNickAndSetDefaultCharacterInfo", Name_Input.text.ToString());
+                errorMsg.text = "";
+                NickUsePopup.gameObject.SetActive(true);                
 
             }
         });
     }
-
+    public void SetNick()
+    {
+        ManagerSystem.Instance.StepByCall("6_CreateNickAndSetDefaultCharacterInfo", Name_Input.text.ToString());
+        NickUsePopup.gameObject.SetActive(false) ; 
+    }
+    public void ClosePopup()
+    {
+        NickUsePopup.gameObject.SetActive(false);
+    }
     /*public void TryGoogleLogin()
     {
         TheBackend.ToolKit.GoogleLogin.Android.GoogleLogin(true, GoogleLoginCallback);

@@ -2,24 +2,30 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mail;
+using TMPro;
 using UnityEngine;
 using UnityEngine.AddressableAssets;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 public class DownMng : MonoBehaviour
 {
-    [Header("UI")]
+    [Header("파일체크중입니다.")]
     public GameObject waitMessage;
-    public GameObject downMessage;
 
-    public Button GoogleLoginBtn;
-    public GameObject FileDownButtonObj;
+    [Header("다운로드 파일 크기 입니다")]
+    public GameObject downMessage;
+    public TextMeshProUGUI sizeInfoText;
+
+    [Header("파일을 다운로드 중입니다.")]
+    public Transform DownlodingObj;
+    public Scrollbar downSlider;
+    public TextMeshProUGUI downValText;
+
     public GameObject ParentObj;
 
-    public Scrollbar downSlider;
-    public Text sizeInfoText; 
-    public Text downValText;
-
+    public GameObject FileDownButtonObj;
+    public Button GoogleLoginBtn;
     [Header("Label")]
     public AssetLabelReference player;
     public AssetLabelReference ballskin;
@@ -129,6 +135,10 @@ public class DownMng : MonoBehaviour
 
     IEnumerator PatchFiles()
     {
+        downMessage.SetActive(false);
+        waitMessage.gameObject.SetActive(false);
+        FileDownButtonObj.gameObject.SetActive(false);
+        DownlodingObj.gameObject.SetActive(true);
         /*
         A 그룹에 두 개의 오브젝트(예: 프리팹 1, 프리팹 2)가 있다고 가정합.
         이 중에서 프리팹 1에만 "default" 라벨이 설정되어 있고, 프리팹 2는 라벨이 설정되지 않은 상태라고 합시다.
