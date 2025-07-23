@@ -8,11 +8,11 @@ PlayerSettings:
   AndroidProfiler: 0
   AndroidFilterTouchesWhenObscured: 0
   AndroidEnableSustainedPerformanceMode: 0
-  defaultScreenOrientation: 4
+  defaultScreenOrientation: 2
   targetDevice: 2
   useOnDemandResources: 0
   accelerometerFrequency: 60
-  companyName: DefaultCompany
+  companyName: multiplay
   productName: golf
   defaultCursor: {fileID: 0}
   cursorHotspot: {x: 0, y: 0}
@@ -140,7 +140,7 @@ PlayerSettings:
   loadStoreDebugModeEnabled: 0
   visionOSBundleVersion: 1.0
   tvOSBundleVersion: 1.0
-  bundleVersion: 1.1
+  bundleVersion: 1.2
   preloadedAssets:
   - {fileID: 11400000, guid: bfca276932017b04f90bf40f862c93b7, type: 2}
   metroInputSource: 0
@@ -164,7 +164,7 @@ PlayerSettings:
   androidMaxAspectRatio: 2.1
   androidMinAspectRatio: 1
   applicationIdentifier:
-    Android: com.DefaultCompany.golf
+    Android: com.multiplay.golf
     Standalone: com.DefaultCompany.FoodFusion
   buildNumber:
     Standalone: 0
@@ -266,8 +266,8 @@ PlayerSettings:
   AndroidTargetArchitectures: 3
   AndroidSplashScreenScale: 0
   androidSplashScreen: {fileID: 0}
-  AndroidKeystoreName: C:/Users/iju/Desktop/projects/keystoreSaveFolderNeverDelete/new/user.keystore
-  AndroidKeyaliasName: alias01
+  AndroidKeystoreName: C:/Users/iju/Desktop/keyst/user.keystore
+  AndroidKeyaliasName: golf
   AndroidEnableArmv9SecurityFeatures: 0
   AndroidEnableArm64MTE: 0
   AndroidBuildApkPerCpuArchitecture: 0
