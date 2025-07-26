@@ -7,6 +7,7 @@ public class LobbyManager : MonoBehaviour
 {
     public static LobbyManager Instance { get; private set; }
     [SerializeField] public GameObject[] sprites;
+    public Button GamestartBtn;
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -22,12 +23,15 @@ public class LobbyManager : MonoBehaviour
     public void Step9()
     {
         InitResource();
+        InitGameLogic();
     }
     public void InitResource()
     {
-        foreach (var item in sprites)
+  
+       foreach (var item in sprites)
         {
             Sprite r_sprite = AddressableMng.instance.GetSprite("lobbyui", item.name);
+            Debug.Log(r_sprite.ToString());
             if (item.TryGetComponent<Image>(out var image))
             {
                 image.sprite = r_sprite;
@@ -42,5 +46,9 @@ public class LobbyManager : MonoBehaviour
             }
 
         }
+    }
+    public void InitGameLogic()
+    {
+        GamestartBtn.onClick.AddListener(ManagerSystem.Instance.MatchManager.TryConnectShared);
     }
 }
