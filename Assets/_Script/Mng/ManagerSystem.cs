@@ -39,7 +39,7 @@ public class ManagerSystem : MonoBehaviour
         MatchManager.Init();
     }
 
-    public void StepByCall(string type, string type2 = null)
+    public void InitStepByCall(string type, string type2 = null)
     {
         switch (type)
         {
@@ -67,6 +67,15 @@ public class ManagerSystem : MonoBehaviour
                 break;
             case "8_CashingUserData":
                 BackendMng.Step8();
+                break;
+        }
+    }
+    public void LobbySceneStepByCall(string type, string type2 = null)
+    {
+        switch (type)
+        {
+            case "9_LobbySceneInit":
+                LobbyManager.Instance.Step9();
                 break;
         }
     }

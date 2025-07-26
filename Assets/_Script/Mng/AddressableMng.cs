@@ -17,8 +17,8 @@ public class AddressableMng : MonoBehaviour
     public Dictionary<string, Material> materialCache = new();
     private Dictionary<string, AsyncOperationHandle<IList<Material>>> materialHandles = new();
 
-    /*private Dictionary<string, SpriteAtlas> spriteCache = new();
-    private Dictionary<string, AsyncOperationHandle<IList<SpriteAtlas>>> spriteHandles = new();*/
+    public Dictionary<string, List<Sprite>> spriteCache = new();
+    private Dictionary<string, AsyncOperationHandle<IList<Sprite>>> spriteHandles = new();
 
     private void Awake()
     {
@@ -29,20 +29,21 @@ public class AddressableMng : MonoBehaviour
         }
         instance = this;
     }
+    #region # 리소스 캐싱
     public void Step3()
     {
         StartCoroutine(InitializeAllAssets(
            new List<string> { "player" },
-           new List<string> { "ballskin" }
-          
+           new List<string> { "ballskin" },
+           new List<string> { "lobbyui" }
        ));
     }
-    public IEnumerator InitializeAllAssets(List<string> prefabLabels, List<string> materialLabels)
+    public IEnumerator InitializeAllAssets(List<string> prefabLabels, List<string> materialLabels, List<string> spriteLabels)
     {
         if (prefabLabels != null) yield return InitializeAllPrefabs(prefabLabels);
         if (materialLabels != null) yield return InitializeAllMaterials(materialLabels);
-
-        ManagerSystem.Instance.StepByCall("4_BackendInit");
+        if (spriteLabels != null) yield return InitializeAllSprites(spriteLabels);
+        ManagerSystem.Instance.InitStepByCall("4_BackendInit");
     }
 
     public IEnumerator InitializeAllPrefabs(List<string> labels)
@@ -91,31 +92,31 @@ public class AddressableMng : MonoBehaviour
             }
         }
     }
-/*
-    public IEnumerator InitializeAllSpriteAtlases(List<string> labels)
+    public IEnumerator InitializeAllSprites(List<string> labels)
     {
         foreach (var label in labels)
         {
-            if (!spriteHandles.ContainsKey(label))
+            if (!spriteCache.ContainsKey(label))
             {
-                var handle = Addressables.LoadAssetsAsync<SpriteAtlas>(label, null);
+                var handle = Addressables.LoadAssetsAsync<Sprite>(label, null);
                 yield return handle;
 
                 if (handle.Status == AsyncOperationStatus.Succeeded)
                 {
                     spriteHandles[label] = handle;
-                    foreach (var atlas in handle.Result)
-                        spriteCache[atlas.name] = atlas;
-                    Debug.Log($"[스프라이트 아틀라스 로드 완료] {label}");
+                    spriteCache[label] = new List<Sprite>(handle.Result);
+                    Debug.Log($"[스프라이트 로드 완료] {label}");
                 }
                 else
                 {
-                    Debug.LogError($"[스프라이트 아틀라스 로드 실패] {label}: {handle.OperationException}");
+                    Debug.LogError($"[스프라이트 로드 실패] {label}: {handle.OperationException}");
                 }
             }
         }
     }
-*/
+    #endregion
+
+    #region # 리소스 반환
     public GameObject GetPrefab(string label, string prefabName)
     {
         if (prefabCache.TryGetValue(label, out var list))
@@ -125,60 +126,15 @@ public class AddressableMng : MonoBehaviour
         return null;
     }
 
-    public Material GetMaterial(string name) => materialCache.TryGetValue(name, out var mat) ? mat : null;
-    /*
-        public Sprite GetSprite(string spriteName)
-        {
-            foreach (var atlas in spriteCache.Values)
-            {
-                var sprite = atlas.GetSprite(spriteName);
-                if (sprite != null) return sprite;
-            }
-            return null;
-        }*/
-
-    public void ApplyMaterialTo(GameObject go, string materialName, bool instantiate = false)
+    public Sprite GetSprite(string label, string spriteName)
     {
-        if (!go)
+        if (spriteCache.TryGetValue(label, out var list))
         {
-            Debug.LogError("[ApplyMaterialTo] GameObject가 null임");
-            return;
+            return list.Find(s => s.name == spriteName);
         }
-
-        if (!materialCache.TryGetValue(materialName, out var mat))
-        {
-            Debug.LogError($"[ApplyMaterialTo] '{materialName}' 머티리얼을 찾지 못함");
-            return;
-        }
-
-        Debug.Log($"[ApplyMaterialTo] 머티리얼 '{materialName}' 적용 시도 중");
-
-        var renderers = go.GetComponentsInChildren<MeshRenderer>(true);
-        Debug.Log($"[ApplyMaterialTo] Renderer 개수: {renderers.Length}");
-
-        foreach (var renderer in renderers)
-        {
-            Debug.Log($"[ApplyMaterialTo] 적용 대상: {renderer.name}");
-
-            if (instantiate)
-                renderer.material = mat;
-            else
-                renderer.sharedMaterial = mat;
-        }
+        return null;
     }
 
+    #endregion
 
-    public void ReleaseEverything()
-    {
-        foreach (var h in prefabHandles.Values) Addressables.Release(h);
-        prefabHandles.Clear(); prefabCache.Clear();
-
-        foreach (var h in materialHandles.Values) Addressables.Release(h);
-        materialHandles.Clear(); materialCache.Clear();
-/*
-        foreach (var h in spriteHandles.Values) Addressables.Release(h);
-        spriteHandles.Clear(); spriteCache.Clear();
-*/
-        Debug.Log("[어드레서블 모든 캐시 해제 완료]");
-    }
 }

@@ -89,7 +89,7 @@ public class BackendChart : MonoBehaviour
         {
             LoadChart(chartName);
         }
-        ManagerSystem.Instance.StepByCall("8_CashingUserData");
+        ManagerSystem.Instance.InitStepByCall("8_CashingUserData");
 
     }
     #endregion

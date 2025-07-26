@@ -4,43 +4,83 @@ using UnityEngine.UI;
 
 public class BgScroll : MonoBehaviour
 {
-    [SerializeField] private RawImage _img;
-    [SerializeField] private Image _star1;
-    [SerializeField] private Image _star2;
-    [SerializeField] private Image _star3;
-    [SerializeField] private Image _star4;
-    [SerializeField] private Image _star5;
+    [Header("Background Elements")]
+    [SerializeField] private RawImage _scrollBackground;
+    [SerializeField] private float scrollSpeedX = 0.01f;
+    [SerializeField] private float scrollSpeedY = 0f;
 
-    [SerializeField] private float _x, _y;
+    [Header("Floating Elements (Left/Right Move)")]
+    [SerializeField] private Image _floatLeft;
+    //[SerializeField] private Image _floatRight;
+    [SerializeField] private float floatDistance = 50f;
+    [SerializeField] private float floatDuration = 2f;
+
+    [Header("Rotating Elements")]
+    [SerializeField] private Image _rotateLeft;
+    [SerializeField] private Image _rotateRight;
+    [SerializeField] private float rotateAngle = 5f;
+    [SerializeField] private float rotateDuration = 2f;
+
+    [Header("Boat Movement")]
+    [SerializeField] private RectTransform boat;
+    [SerializeField] private RectTransform canvasRect;
+    [SerializeField] private float boatMoveDuration = 30f;
+
+    private float boatWidth;
 
     private void Start()
     {
-        AnimateStar(_star1);
-        AnimateStar(_star2);
-        AnimateStar(_star3);
-        AnimateStar(_star4);
-        AnimateStar(_star5);
+        AnimateFloat(_floatLeft, floatDistance);
+
+        AnimateRotate(_rotateLeft, rotateAngle);
+        AnimateRotate(_rotateRight, -rotateAngle);
+
+        boatWidth = boat.rect.width;
+        StartBoatLoop();
     }
 
-    private void AnimateStar(Image star)
+    private void AnimateFloat(Image target, float distance)
     {
-        float delay = Random.Range(0f, 1.5f); // ·£´ý µô·¹ÀÌ
+        RectTransform rect = target.GetComponent<RectTransform>();
+        float originalX = rect.anchoredPosition.x;
 
-        // Å©±â
-        star.transform.DOScale(1.2f, 1.5f)
-            .SetDelay(delay)
-            .SetLoops(-1, LoopType.Yoyo)
-            .SetEase(Ease.InOutQuad);
-
-        // ¾ËÆÄ
-        star.DOFade(0.8f, 1.5f)
-            .SetDelay(delay)
+        rect.DOAnchorPosX(originalX + distance, floatDuration)
             .SetLoops(-1, LoopType.Yoyo)
             .SetEase(Ease.InOutSine);
     }
 
-    void Update()
+    private void AnimateRotate(Image target, float angle)
     {
-        _img.uvRect = new Rect(_img.uvRect.position + new Vector2(_x, _y) * Time.deltaTime, _img.uvRect.size);
+        target.transform.DORotate(new Vector3(0, 0, angle), rotateDuration)
+            .SetLoops(-1, LoopType.Yoyo)
+            .SetEase(Ease.InOutSine);
+    }
+
+    private void StartBoatLoop()
+    {
+        float rightOutside = canvasRect.rect.width / 2 + boatWidth;
+        float leftOutside = -canvasRect.rect.width / 2 - boatWidth;
+
+        boat.anchoredPosition = new Vector2(rightOutside, boat.anchoredPosition.y);
+
+        boat.DOAnchorPosX(leftOutside, boatMoveDuration)
+            .SetEase(Ease.Linear)
+            .OnComplete(StartBoatLoop); // Àç±Í ¹Ýº¹
+    }
+
+    private void Update()
+    {
+        ScrollBackground();
+    }
+
+    private void ScrollBackground()
+    {
+        if (_scrollBackground != null)
+        {
+            _scrollBackground.uvRect = new Rect(
+                _scrollBackground.uvRect.position + new Vector2(scrollSpeedX, scrollSpeedY) * Time.deltaTime,
+                _scrollBackground.uvRect.size
+            );
+        }
     }
 }

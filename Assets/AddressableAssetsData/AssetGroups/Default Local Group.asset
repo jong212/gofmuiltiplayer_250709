@@ -15,17 +15,65 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: fb77703cdfbc25e44ab12920cd85687c
   m_SerializeEntries:
+  - m_GUID: 1eaee135ce037439d925cee5e41ce026
+    m_Address: Assets/_Addressable/LobbySprite/Check/Lobby11.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 483588457e5cfc343813735c5837680f
     m_Address: Player
     m_ReadOnly: 0
     m_SerializedLabels:
     - player
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4ae1577a9da43b24cbca49983da940b1
+    m_Address: Assets/_Addressable/LobbySprite/Check/Lobby4.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 4df04682dcb440c45baf2dc0068c1e80
+    m_Address: Assets/_Addressable/LobbySprite/Check/Lobby8.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 53d486f9569716047a507af717e56b7a
+    m_Address: Assets/_Addressable/LobbySprite/Check/Lobby1.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 5707fe3537e3faf4bb53806bf5366877
+    m_Address: Assets/_Addressable/LobbySprite/Check/Lobby9.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 63431ae85bcf4af4db1733ac2d3486bf
+    m_Address: Assets/_Addressable/LobbySprite/Check/Lobby5.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 64e3fd24a3ff0284aa91e5877d11afe2
     m_Address: Assets/_Addressable/Player/Checked/bodymt0.mat
     m_ReadOnly: 0
     m_SerializedLabels:
     - ballskin
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7887d76c03399e440aba619f406d71af
+    m_Address: Assets/_Addressable/LobbySprite/Check/Lobby2.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 7d793337173ecdc4b96504fa8849b302
+    m_Address: Assets/_Addressable/LobbySprite/Check/Lobby0.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 803e9f5f774726c4da39cf2fed80da39
     m_Address: Assets/_Addressable/Player/Checked/bodymt1.mat
@@ -38,6 +86,30 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - ballskin
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9039c9178af37894683cdf956a4f6c9b
+    m_Address: Assets/_Addressable/LobbySprite/Check/Lobby7.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: bc3772a8a3cda3e4999852e9b7065969
+    m_Address: Assets/_Addressable/LobbySprite/Check/Lobby10.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: dc4fe7047315b6e43acb513346c32789
+    m_Address: Assets/_Addressable/LobbySprite/Check/Lobby6.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: e62cd064942c8294e9ca34cf1f3e71af
+    m_Address: Assets/_Addressable/LobbySprite/Check/Lobby3.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
     FlaggedDuringContentUpdateRestriction: 0
   m_ReadOnly: 0
   m_Settings: {fileID: 11400000, guid: e5c0246bd1d3d3f42949dd3a07db0baa, type: 2}

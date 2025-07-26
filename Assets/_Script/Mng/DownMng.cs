@@ -29,6 +29,7 @@ public class DownMng : MonoBehaviour
     [Header("Label")]
     public AssetLabelReference player;
     public AssetLabelReference ballskin;
+    public AssetLabelReference lobbyui;
 
     private long patchSize;
     private Dictionary<string, long> patchMap = new Dictionary<string, long>();
@@ -43,12 +44,12 @@ public class DownMng : MonoBehaviour
             return;
         }
         instance = this;
-        FileDownButtonObj.GetComponent<Button>().onClick.AddListener(() => ManagerSystem.Instance.StepByCall("2_FileDownLoad"));
+        FileDownButtonObj.GetComponent<Button>().onClick.AddListener(() => ManagerSystem.Instance.InitStepByCall("2_FileDownLoad"));
     }
     private void Start()
     {
         ParentObj.gameObject.SetActive(true);
-        ManagerSystem.Instance.StepByCall("1_FileDownCheck");
+        ManagerSystem.Instance.InitStepByCall("1_FileDownCheck");
     }
     public void Step1()
     {
@@ -73,7 +74,7 @@ public class DownMng : MonoBehaviour
     }
     IEnumerator CheckUpdateFiles()
     {
-        var labels = new List<string>() {player.labelString,ballskin.labelString};
+        var labels = new List<string>() {player.labelString,ballskin.labelString, lobbyui.labelString};
         patchSize = default;
 
         foreach (var label in labels)
@@ -103,7 +104,7 @@ public class DownMng : MonoBehaviour
             downSlider.size = 1f;
             yield return new WaitForSeconds(2f);
             Debug.Log("[2 LobbyManager : 다운로드 할 리소스 파일 없음 ]");
-            ManagerSystem.Instance.StepByCall("3_AddressableCashing", null
+            ManagerSystem.Instance.InitStepByCall("3_AddressableCashing", null
             );
         }
 
@@ -144,7 +145,7 @@ public class DownMng : MonoBehaviour
         이 중에서 프리팹 1에만 "default" 라벨이 설정되어 있고, 프리팹 2는 라벨이 설정되지 않은 상태라고 합시다.
         이 경우, Addressables.GetDownloadSizeAsync("default")를 호출하면 "default" 라벨이 설정된 리소스만 다운로드할 크기를 확인하게 됨. 즉, 프리팹 1만 다운로드 대상이 되고, 프리팹 2는 무시.        
         */
-        var labels = new List<string>() { player.labelString, ballskin.labelString};
+        var labels = new List<string>() { player.labelString, ballskin.labelString, lobbyui.labelString};
 
         foreach (var label in labels)
         {
@@ -196,7 +197,7 @@ public class DownMng : MonoBehaviour
                 Debug.Log("[2-1 다운 완료]");
                 // 모든 비동기 작업이 완료되었는지 확인
                 // 씬 비동기로 로드
-                ManagerSystem.Instance.StepByCall("3_AddressableCashing",null );
+                ManagerSystem.Instance.InitStepByCall("3_AddressableCashing",null );
 
                 break;
             }

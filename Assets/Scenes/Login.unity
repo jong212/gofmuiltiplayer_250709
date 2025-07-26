@@ -3639,12 +3639,12 @@ GameObject:
   - component: {fileID: 1738272181}
   - component: {fileID: 1738272180}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: "GoogleLogin\uC774\uAC70\uC7A0\uC2DC\uAEBC\uB460"
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!114 &1738272180
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4791,6 +4791,8 @@ MonoBehaviour:
     m_LabelString: player
   ballskin:
     m_LabelString: ballskin
+  lobbyui:
+    m_LabelString: lobbyui
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

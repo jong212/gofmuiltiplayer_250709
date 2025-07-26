@@ -1,7 +1,9 @@
 using BackEnd;
 using BackEnd.Functions;
 using System;
+using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 public class BackendMng : MonoBehaviour
 {
@@ -12,7 +14,7 @@ public class BackendMng : MonoBehaviour
         if (bro.IsSuccess())
         {
             Debug.Log("초기화 성공 : " + bro); // 성공일 경우 statusCode 204 Success
-            ManagerSystem.Instance.StepByCall("5_GoogleLoginBtnActive");
+            ManagerSystem.Instance.InitStepByCall("5_GoogleLoginBtnActive");
 
         }
         else
@@ -54,7 +56,7 @@ public class BackendMng : MonoBehaviour
     {
         InsertInitUserData initData = new InsertInitUserData();
         InsertGameData("Character", initData.ToParam(), (bro) => {
-            ManagerSystem.Instance.StepByCall("7_BackendChartLoad");
+            ManagerSystem.Instance.InitStepByCall("7_BackendChartLoad");
         });
     }
 
@@ -77,7 +79,8 @@ public class BackendMng : MonoBehaviour
                ManagerSystem.Instance.BackendCash.UserData = tempdata;
                DownMng.instance.ParentObj.gameObject.SetActive(false);
 
-
+                Debug.Log("게임 데이터 캐싱 완료 > 로비씬 변경");
+                StartCoroutine(LoadSceneAsync("Lobby"));
                 //Debug.Log(ManagerSystem.Instance.BackendCash.UserData.ToString());
                 /*  var chartList = ManagerSystem.Instance.BackendCash.ChartCharacter;
 
@@ -95,7 +98,14 @@ public class BackendMng : MonoBehaviour
             }
         }
     }
-
+    IEnumerator LoadSceneAsync(string sceneName)
+    {
+        AsyncOperation asyncLoad = SceneManager.LoadSceneAsync(sceneName);
+        while (!asyncLoad.isDone)
+        {
+            yield return null;  // 씬 로드가 완료될 때까지 대기
+        }
+    }
     #region UPDATE, INERT 
     public void InsertGameData(string tableName, Param param, Action<BackendReturnObject> onComplete = null)
     {

@@ -45,7 +45,7 @@ public class LoginWithGoogle : MonoBehaviour {
         // 기존 회원 && 닉네임이 비어있지 않은 경우 에만 if문탐 (기존 회원이 아니거나 닉설정 안되면 else 탐)
         if (bro.StatusCode == 200 && !string.IsNullOrEmpty(nick))
         {
-            ManagerSystem.Instance.StepByCall("7_BackendChartLoad");
+            ManagerSystem.Instance.InitStepByCall("7_BackendChartLoad");
         } else
         {
             NickNameSetPanel.gameObject.SetActive(true);
@@ -69,7 +69,7 @@ public class LoginWithGoogle : MonoBehaviour {
     }
     public void SetNick()
     {
-        ManagerSystem.Instance.StepByCall("6_CreateNickAndSetDefaultCharacterInfo", Name_Input.text.ToString());
+        ManagerSystem.Instance.InitStepByCall("6_CreateNickAndSetDefaultCharacterInfo", Name_Input.text.ToString());
         NickUsePopup.gameObject.SetActive(false) ; 
     }
     public void ClosePopup()
