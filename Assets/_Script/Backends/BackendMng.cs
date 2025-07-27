@@ -66,6 +66,10 @@ public class BackendMng : MonoBehaviour
     }
     void CashingUserData()
     {
+        var nickData = Backend.BMember.GetUserInfo();
+        LitJson.JsonData userInfoJson = nickData.GetReturnValuetoJSON()["row"];
+        string nick = userInfoJson["nickname"]?.ToString();
+
         var bro = Backend.GameData.GetMyData("Character", new Where());
         if (bro.IsSuccess())
         {
@@ -75,8 +79,10 @@ public class BackendMng : MonoBehaviour
                 Debug.LogWarning("데이터가 존재하지 않습니다.");
             } else
             {
+                Debug.Log(nick);
                UserData tempdata = new UserData(gameDataJson);
                ManagerSystem.Instance.BackendCash.UserData = tempdata;
+               ManagerSystem.Instance.BackendCash.Nick = nick;
                DownMng.instance.ParentObj.gameObject.SetActive(false);
 
                 Debug.Log("게임 데이터 캐싱 완료 > 로비씬 변경");

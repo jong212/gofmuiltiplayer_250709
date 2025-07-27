@@ -77,6 +77,9 @@ public class ManagerSystem : MonoBehaviour
             case "9_LobbySceneInit":
                 LobbyManager.Instance.Step9();
                 break;
+            case "10_GameStartBtnClick":
+                LobbyManager.Instance.Step10();
+                break;
         }
     }
 }

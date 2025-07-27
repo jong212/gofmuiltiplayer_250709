@@ -4718,33 +4718,9 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
-    - target: {fileID: 1830387005689081741, guid: 37d3e07121e54434287b9fac21503c62, type: 3}
-      propertyPath: m_IsActive
-      value: 1
-      objectReference: {fileID: 0}
     - target: {fileID: 2896854152903259454, guid: 37d3e07121e54434287b9fac21503c62, type: 3}
       propertyPath: m_Name
       value: '#Managers'
-      objectReference: {fileID: 0}
-    - target: {fileID: 8740866031644140811, guid: 37d3e07121e54434287b9fac21503c62, type: 3}
-      propertyPath: m_Color.b
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8740866031644140811, guid: 37d3e07121e54434287b9fac21503c62, type: 3}
-      propertyPath: m_Color.g
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8740866031644140811, guid: 37d3e07121e54434287b9fac21503c62, type: 3}
-      propertyPath: m_Color.r
-      value: 1
-      objectReference: {fileID: 0}
-    - target: {fileID: 8740866031644140811, guid: 37d3e07121e54434287b9fac21503c62, type: 3}
-      propertyPath: m_Material
-      value: 
-      objectReference: {fileID: 0}
-    - target: {fileID: 8740866031644140811, guid: 37d3e07121e54434287b9fac21503c62, type: 3}
-      propertyPath: m_FillAmount
-      value: 0
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

@@ -93,6 +93,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - ballskin
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 885762d0c25ec2e46a20c2a94ceb78f7
+    m_Address: Assets/_Addressable/LobbySprite/Check/Lobby18.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 89be0e282f5a79a4ca700953bf0b3f68
     m_Address: Assets/_Addressable/LobbySprite/Check/Lobby17.png
     m_ReadOnly: 0
@@ -137,6 +143,12 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: e62cd064942c8294e9ca34cf1f3e71af
     m_Address: Assets/_Addressable/LobbySprite/Check/Lobby3.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ef55aab117a0a3040b24fd88d485eef4
+    m_Address: Assets/_Addressable/LobbySprite/Check/Lobby19.png
     m_ReadOnly: 0
     m_SerializedLabels:
     - lobbyui

@@ -19,7 +19,7 @@ public class BackendCashAll : MonoBehaviour
         get => _chartCharacter;
         set => _chartCharacter = value;
     }
-
+    public string Nick;
     public string gameDataRowInDate = string.Empty;
     #endregion
 

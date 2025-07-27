@@ -97,6 +97,8 @@ public class MatchManager : MonoBehaviour, INetworkRunnerCallbacks
                 // Room_Mng의 스폰 성공 여부 및 Ready 상태 대기
                 var roomObj = Runner.Spawn(roomMngPrefab);
                 if (roomObj != null && roomObj.TryGetBehaviour<Room_Mng>(out var manager)) { roomManager = manager; }
+                ManagerSystem.Instance.LobbySceneStepByCall("10_GameStartBtnClick");
+
                 // 방 입장 대기: roomManager가 유효하고 ReadyToStart 플래그가 true가 될 때까지 기다림
                 yield return new WaitUntil
 				(
@@ -107,9 +109,13 @@ public class MatchManager : MonoBehaviour, INetworkRunnerCallbacks
                 );
                 // [4] 마스터 클라이언트만 씬 로드 → 일반 클라이언트는 자동으로 따라감
                 Runner.LoadScene(gameScene);
+            } else
+            {
+                ManagerSystem.Instance.LobbySceneStepByCall("10_GameStartBtnClick");
             }
+
         }
-	}
+    }
 
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
 	{
@@ -117,7 +123,7 @@ public class MatchManager : MonoBehaviour, INetworkRunnerCallbacks
 		if (_joinRoutine != null) { StopCoroutine(_joinRoutine); }
         if (shutdownReason == ShutdownReason.Ok)
 		{
-			SceneManager.LoadScene("Menu");
+			SceneManager.LoadScene("Lobby");
 		}
 	}
     private void OnDestroy()
