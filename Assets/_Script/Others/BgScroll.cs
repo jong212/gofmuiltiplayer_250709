@@ -83,4 +83,12 @@ public class BgScroll : MonoBehaviour
             );
         }
     }
+    public void RegisterWindTarget(Transform t)
+    {
+        t.DORotate(new Vector3(0, 0, 5), 2f, RotateMode.LocalAxisAdd)
+         .SetEase(Ease.InOutSine)
+         .SetLoops(-1, LoopType.Yoyo)
+         .SetDelay(Random.Range(0f, 1f));
+    }
+
 }

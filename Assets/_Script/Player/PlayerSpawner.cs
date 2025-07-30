@@ -34,25 +34,6 @@ public class PlayerSpawner : SimulationBehaviour, IPlayerJoined, IPlayerLeft
                 yield break;
             }
 
-			// 난 1번 머테리얼 착용중임
-			var tempUserData = ManagerSystem.Instance.BackendCash.UserData;
-
-			// 그럼 1번 가져와
-			var tempMtData = ManagerSystem.Instance.BackendCash.ChartCharacter[tempUserData.SelectedCharId - 1];
-
-			// 
-            var renderer = playerPrefab.GetComponentInChildren<MeshRenderer>();
-            if (renderer != null && AddressableMng.instance.materialCache.TryGetValue(tempMtData.name, out var mat))
-            {
-                renderer.sharedMaterial = mat; // sharedMaterial 사용해야 원형에 적용됨
-                Debug.Log("✅ 머테리얼 적용 완료");
-            }
-            else
-            {
-                Debug.LogWarning("❌ 머테리얼 적용 실패");
-            }
-
-            Debug.Log("Spawning player");
 
             Vector3 loc = new Vector3(0f, 3f, 0f);   // 지면보다 5 cm 위
             Runner.SpawnAsync(
@@ -64,8 +45,6 @@ public class PlayerSpawner : SimulationBehaviour, IPlayerJoined, IPlayerLeft
 					onCompleted: (res) => { 
 						if (res.IsSpawned) { 
 							Runner.SetPlayerObject(Runner.LocalPlayer, res.Object);
-                            //AddressableMng.instance.ApplyMaterialTo(res.Object.gameObject, "GolfGreen");
-
                         }
 
                     }

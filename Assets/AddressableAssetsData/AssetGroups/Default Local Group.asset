@@ -15,6 +15,12 @@ MonoBehaviour:
   m_GroupName: Default Local Group
   m_GUID: fb77703cdfbc25e44ab12920cd85687c
   m_SerializeEntries:
+  - m_GUID: 12ab7dfd39045c04a914a2ac9e59b02f
+    m_Address: Assets/_Assets/Ball Pack/Prefabs/BuckyBall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ballskin
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 483588457e5cfc343813735c5837680f
     m_Address: Player
     m_ReadOnly: 0
@@ -39,6 +45,12 @@ MonoBehaviour:
     m_SerializedLabels:
     - lobbyui
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 567701a612739d641b09e5b0db5e45d5
+    m_Address: Assets/_Addressable/Lobby/GroundUI/Checked/MatchUI.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - obj
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 5707fe3537e3faf4bb53806bf5366877
     m_Address: Assets/_Addressable/LobbySprite/Check/Lobby9.png
     m_ReadOnly: 0
@@ -51,8 +63,20 @@ MonoBehaviour:
     m_SerializedLabels:
     - lobbyui
     FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 64e3fd24a3ff0284aa91e5877d11afe2
-    m_Address: Assets/_Addressable/Player/Checked/bodymt0.mat
+  - m_GUID: 63c76cfb42cea0e429cc31b49501da0e
+    m_Address: Assets/_Assets/Ball Pack/Prefabs/SpikeBall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ballskin
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 64feaa7b7b780fb4f92198f6fb2e1bdb
+    m_Address: Assets/_Assets/Ball Pack/Prefabs/WheelBall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ballskin
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 6a43ca4885280844bb009563bd7d1dcd
+    m_Address: Assets/_Assets/Ball Pack/Prefabs/AtomBall.prefab
     m_ReadOnly: 0
     m_SerializedLabels:
     - ballskin
@@ -80,18 +104,6 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - lobbyui
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 803e9f5f774726c4da39cf2fed80da39
-    m_Address: Assets/_Addressable/Player/Checked/bodymt1.mat
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ballskin
-    FlaggedDuringContentUpdateRestriction: 0
-  - m_GUID: 850080602b95efc42bf2555371180305
-    m_Address: Assets/_Addressable/Player/Checked/bodymt2.mat
-    m_ReadOnly: 0
-    m_SerializedLabels:
-    - ballskin
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 885762d0c25ec2e46a20c2a94ceb78f7
     m_Address: Assets/_Addressable/LobbySprite/Check/Lobby18.png
@@ -128,6 +140,12 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - lobbyui
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: da98780e533fe794aa83fa27bbfddf57
+    m_Address: Assets/_Assets/Ball Pack/Prefabs/EyeBall.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - ballskin
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: dc4fe7047315b6e43acb513346c32789
     m_Address: Assets/_Addressable/LobbySprite/Check/Lobby6.png

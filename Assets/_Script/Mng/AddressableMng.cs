@@ -35,14 +35,17 @@ public class AddressableMng : MonoBehaviour
         StartCoroutine(InitializeAllAssets(
            new List<string> { "player" },
            new List<string> { "ballskin" },
-           new List<string> { "lobbyui" }
+           new List<string> { "lobbyui" },
+           new List<string> { "obj" }
        ));
     }
-    public IEnumerator InitializeAllAssets(List<string> prefabLabels, List<string> materialLabels, List<string> spriteLabels)
+    public IEnumerator InitializeAllAssets(List<string> prefabLabels, List<string> ballMeshLabels, List<string> spriteLabels,List<string>objLabels)
     {
         if (prefabLabels != null) yield return InitializeAllPrefabs(prefabLabels);
-        if (materialLabels != null) yield return InitializeAllMaterials(materialLabels);
+        if (ballMeshLabels != null) yield return InitializeAllPrefabs(ballMeshLabels);
+        /* 스프라이트 나중에 쓸때 이걸로  if (materialLabels != null) yield return InitializeAllMaterials(materialLabels);*/ 
         if (spriteLabels != null) yield return InitializeAllSprites(spriteLabels);
+        if (objLabels!= null) yield return InitializeAllPrefabs(objLabels);
         ManagerSystem.Instance.InitStepByCall("4_BackendInit");
     }
 

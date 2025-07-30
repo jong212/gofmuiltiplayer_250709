@@ -120,6 +120,7 @@ public class MatchManager : MonoBehaviour, INetworkRunnerCallbacks
     public void OnShutdown(NetworkRunner runner, ShutdownReason shutdownReason)
 	{
 		Runner = null;
+        if (Room_Mng.instance != null) Room_Mng.instance = null;
 		if (_joinRoutine != null) { StopCoroutine(_joinRoutine); }
         if (shutdownReason == ShutdownReason.Ok)
 		{

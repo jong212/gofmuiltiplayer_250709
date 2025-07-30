@@ -15,10 +15,10 @@ TagManager:
   - Object
   - Paddle
   - Ball
-  - LobbyPlayer
-  - 
-  - 
-  - 
+  - LobbyPlayer1
+  - LobbyPlayer2
+  - LobbyPlayer3
+  - LobbyPlayer4
   - 
   - 
   - 

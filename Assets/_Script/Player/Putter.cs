@@ -15,6 +15,7 @@ public class Putter : NetworkBehaviour
     public Transform interpolationTarget;
     public Rigidbody rb;
     public Transform Arrow;
+    public Transform body;
     public MeshRenderer ArrowMeshRenderer;
     new public SphereCollider collider;
 
@@ -43,6 +44,8 @@ public class Putter : NetworkBehaviour
     {
         if (Object.HasStateAuthority)
             CameraController.AssignControl(interpolationTarget);
+
+        PlayerVisualSet();
     }
     public override void Render()
     {
@@ -132,5 +135,15 @@ public class Putter : NetworkBehaviour
 
         GameManager.instance.Rpc_NotifyGoalReached(Runner.LocalPlayer);
     }
+    void PlayerVisualSet()
+    {
+        // 난 n번 바디 착용중임
+        var tempUserData = ManagerSystem.Instance.BackendCash.UserData;
+        // 그럼 1번 가져와
+        var tempMtData = ManagerSystem.Instance.BackendCash.ChartCharacter[tempUserData.SelectedCharId - 1];
+        Debug.Log(tempMtData.name);
+        GameObject bodyPrefab = AddressableMng.instance.GetPrefab("ballskin", tempMtData.name);
 
+        Instantiate(bodyPrefab, body.transform);
+    }
 }

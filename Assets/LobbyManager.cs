@@ -12,7 +12,13 @@ public class LobbyManager : MonoBehaviour
     public static LobbyManager Instance { get; private set; }
     [SerializeField] public GameObject[] sprites;
 
-    public Transform MatchPopup;
+    public Transform BG_UI;
+    public Transform Lobby_UI;
+    public Transform Room_UI;
+
+    public Transform Room_Parent;
+    public Transform Room_Addressable_Instance;
+
     public Button GamestartBtn;
     public Button GameCancelBtn;
     public TextMeshProUGUI playerCount;
@@ -44,11 +50,14 @@ public class LobbyManager : MonoBehaviour
         yield return new WaitUntil(() => Room_Mng.instance != null);
         int rand = Random.Range(0, 101); // 테스트 할때만 랜덤값 해서 같이 넘김
         Room_Mng.instance.RPC_SubmitNickname(ManagerSystem.Instance.BackendCash.Nick, ManagerSystem.Instance.BackendCash.UserData.SelectedCharId);
-        MatchPopup.gameObject.SetActive(true);
+        Room_Parent.gameObject.SetActive(true);
+        Room_UI.gameObject.SetActive(true);
+        BG_UI.gameObject.SetActive(false);
+        Lobby_UI.gameObject.SetActive(false);
     }
     public void InitResource()
     {
-  
+       // Lobby UI Init
        foreach (var item in sprites)
         {
             Sprite r_sprite = AddressableMng.instance.GetSprite("lobbyui", item.name);
@@ -64,9 +73,15 @@ public class LobbyManager : MonoBehaviour
             else
             {
                 Debug.Log("NoResource");
-            }
-
+            } 
         }
+        // Lobby Room UI Init
+        GameObject RoomObj = AddressableMng.instance.GetPrefab("obj", "MatchUI");
+        var roomObj = Instantiate(RoomObj, Room_Parent);
+        Room_Addressable_Instance = roomObj.transform;
+        Room_Parent.gameObject.SetActive(false);
+
+
     }
     public void InitGameLogic()
     {
@@ -76,69 +91,75 @@ public class LobbyManager : MonoBehaviour
 
     private void Update()
     {
-        if (Room_Mng.instance == null) return;
 
-        var nickDict = Room_Mng.instance.Nicknames;
-        var charDict = Room_Mng.instance.CharIdxArr;
-        var activePlayers = MatchManager.Instance.Runner.ActivePlayers;
-
-        List<(int name, int charId)> activePlayerData = new();
-
-        List<PlayerRef> toRemove = new();
-
-        foreach (var kvp in nickDict)
-        {
-            if (!activePlayers.Contains(kvp.Key))
-            {
-                toRemove.Add(kvp.Key);
-            }
-            else if (charDict.TryGet(kvp.Key, out var charId))
-            {
-                activePlayerData.Add((kvp.Value.GetHashCode(), charId)); // or convert name to int
-            }
-        }
-
-        foreach (var player in toRemove)
-        {
-            nickDict.Remove(player);
-            charDict.Remove(player);
-        }
-
-        UpdateLobbyUI(activePlayerData);
+        RenderSettings.skybox.SetFloat("_Rotation", Time.time * 0.5f);
+        UpdateLobbyUI();
     }
-    void UpdateLobbyUI(List<(int name, int charId)> activeData)
+    void UpdateLobbyUI()
     {
-        // [1] activeData 기준으로 슬롯 세팅
-        foreach (var data in activeData)
-        {
-            // 이미 세팅되어 있으면 스킵
-            bool exists = lobbyPlayerinfos.Any(slot => slot.Name == data.name);
-            if (exists) continue;
+ 
+        if (Room_Mng.instance == null || Room_Mng.instance.Nicknames.Count == 0)
+            return;
+        if (!Room_Mng.instance.Object )
+            return;
+        var nicknames = Room_Mng.instance.Nicknames;
 
-            // 없으면 빈 슬롯에 세팅
-            var emptySlot = lobbyPlayerinfos.FirstOrDefault(slot => slot.Name == 0);
-            if (emptySlot != null)
+        // 1. Nicknames 기준으로, 아직 세팅 안된 PlayerRef면 슬롯에 세팅
+        foreach (var kv in nicknames)
+        {
+            string playerRefStr = kv.Key.ToString(); // 중요 포인트
+            string nick = kv.Value.Nick.ToString();
+            int charId = kv.Value.CharId;
+
+            bool isAlreadySet = false;
+
+            foreach (var info in lobbyPlayerinfos)
             {
-                emptySlot.Name = data.name;
-                emptySlot.CharId = data.charId;
-                // emptySlot.ApplyUI(...); // 필요하면 UI 갱신
+                if (info.PlayerRefId == playerRefStr)
+                {
+                    // 세팅 되어있네? 세팅할 필요가 없군 그럼 break !
+                    isAlreadySet = true;
+                    break;
+                }
             }
-            else
+
+            // 세팅 안 되어있네? 빈 거 찾자
+            if (!isAlreadySet)
             {
-                Debug.LogWarning("❌ 빈 슬롯 없음! activeData가 슬롯 수보다 많음");
+                foreach (var info in lobbyPlayerinfos)
+                {
+                    if (string.IsNullOrEmpty(info.PlayerRefId))
+                    {
+                        info.SetPlayer(playerRefStr, nick, charId); // 아래 참고
+                        break;
+                    }
+                }
             }
         }
 
-        // [2] 남아있는 슬롯 중 activeData에 없는 애들 → 초기화
-        foreach (var slot in lobbyPlayerinfos)
+        // 2. 슬롯에 세팅된 PlayerRef 중에 Nicknames에 없는 애들 제거
+        foreach (var info in lobbyPlayerinfos)
         {
-            if (slot.Name == 0) continue; // 이미 빈 슬롯이면 무시
+            if (string.IsNullOrEmpty(info.PlayerRefId)) continue;
 
-            bool stillActive = activeData.Any(data => data.name == slot.Name);
-            if (!stillActive)
+            bool existsInNicknames = false;
+
+            foreach (var kv in nicknames)
             {
-                slot.Settings(); // 초기화 (Name, CharId = 0 등)
+                if (info.PlayerRefId == kv.Key.ToString())
+                {
+                    existsInNicknames = true;
+                    break;
+                }
+            }
+
+            if (!existsInNicknames)
+            {
+                info.ClearSlot(); // 아래 참고
             }
         }
     }
+
+
+
 }

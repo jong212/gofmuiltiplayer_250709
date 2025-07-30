@@ -412,7 +412,6 @@ GameObject:
   m_Component:
   - component: {fileID: 249163594}
   - component: {fileID: 249163593}
-  - component: {fileID: 249163592}
   m_Layer: 0
   m_Name: Main Camera
   m_TagString: MainCamera
@@ -420,14 +419,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!81 &249163592
-AudioListener:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 249163591}
-  m_Enabled: 1
 --- !u!20 &249163593
 Camera:
   m_ObjectHideFlags: 0
@@ -4723,7 +4714,10 @@ PrefabInstance:
       value: '#Managers'
       objectReference: {fileID: 0}
     m_RemovedComponents: []
-    m_RemovedGameObjects: []
+    m_RemovedGameObjects:
+    - {fileID: 1014114268191436737, guid: 37d3e07121e54434287b9fac21503c62, type: 3}
+    - {fileID: 4426717110982749470, guid: 37d3e07121e54434287b9fac21503c62, type: 3}
+    - {fileID: 7016111688472920036, guid: 37d3e07121e54434287b9fac21503c62, type: 3}
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 37d3e07121e54434287b9fac21503c62, type: 3}
@@ -4769,6 +4763,8 @@ MonoBehaviour:
     m_LabelString: ballskin
   lobbyui:
     m_LabelString: lobbyui
+  obj:
+    m_LabelString: obj
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

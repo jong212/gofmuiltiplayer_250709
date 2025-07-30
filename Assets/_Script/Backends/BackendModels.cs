@@ -24,18 +24,24 @@ public class ChartInfo
 public class ChartCharacter
 {
     public int seq { get; private set; }
-    public string title { get; private set; }
-    public int speed { get; private set; }
     public string name { get; private set; }
-    public string label { get; private set; }
+    public float posx { get; private set; }
+    public float posy { get; private set; }
+    public float posz { get; private set; }
+    public float scalex { get; private set; }
+    public float scaley { get; private set; }
+    public float scalez { get; private set; }
 
     public ChartCharacter(JsonData json)
     {
         seq = int.Parse(json["seq"].ToString());
-        title = json["title"].ToString();
-        speed = int.Parse(json["speed"].ToString());
         name = json["name"].ToString();
-        label = json["label"].ToString();
+        posx = float.Parse(json["posx"].ToString());
+        posy = float.Parse(json["posy"].ToString());
+        posz = float.Parse(json["posz"].ToString());
+        scalex = float.Parse(json["scalex"].ToString());
+        scaley = float.Parse(json["scaley"].ToString());
+        scalez = float.Parse(json["scalez"].ToString());
     }
 
 }

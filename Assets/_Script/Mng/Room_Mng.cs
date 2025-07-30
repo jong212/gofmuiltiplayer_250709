@@ -1,7 +1,16 @@
-using Fusion;
+ï»¿using Fusion;
+using System;
+using System.Collections.Generic;
 using System.Linq;
 using Unity.Collections;
 using UnityEngine;
+
+[Serializable]
+public struct LobbyPlayerStruct : INetworkStruct
+{
+    public NetworkString<_32> Nick;   // ë‹‰ ìµœëŒ€ 32â€¯ì
+    public int CharId;
+}
 
 public class Room_Mng : NetworkBehaviour
 {
@@ -12,16 +21,14 @@ public class Room_Mng : NetworkBehaviour
         if (instance == null)
             instance = this;
     }
-    [Header("½Ç½Ã°£ ¹æ Âü¿©ÀÚ ¼ö ")]
+    [Header("ì‹¤ì‹œê°„ ë°© ì°¸ì—¬ì ìˆ˜ ")]
     [Networked] public int PlayerCount { get; private set; }    
     [Networked] public bool ReadyToStart { get; private set; }
 
 
     [Networked, Capacity(4)]
-    public NetworkDictionary<PlayerRef, string> Nicknames => default;
+    public NetworkDictionary<PlayerRef, LobbyPlayerStruct> Nicknames => default;
 
-    [Networked, Capacity(4)]
-    public NetworkDictionary<PlayerRef, int> CharIdxArr => default;
 
     public override void Render()
     {
@@ -33,12 +40,26 @@ public class Room_Mng : NetworkBehaviour
         if (!Object.HasStateAuthority) return;
 
         PlayerCount = Runner.ActivePlayers.Count();
-        // ¿¹: ÀÎ¿øÀÌ 4¸í ÀÌ»óÀÏ ¶§ °ÔÀÓ ½ÃÀÛ Á¶°Ç ¸¸Á·
-        if(  PlayerCount >=4)
+        // Nicknames ì •ë¦¬: ì„¸ì…˜ì—ì„œ ë¹ ì§„ ìœ ì € ì œê±°
+        var toRemove = new List<PlayerRef>();
+
+        foreach (var kv in Nicknames)
+        {
+            if (!Runner.ActivePlayers.Contains(kv.Key))
+                toRemove.Add(kv.Key);
+        }
+
+        foreach (var key in toRemove)
+        {
+            Nicknames.Remove(key);
+        }
+
+        // ì˜ˆ: ì¸ì›ì´ 4ëª… ì´ìƒì¼ ë•Œ ê²Œì„ ì‹œì‘ ì¡°ê±´ ë§Œì¡±
+        if ( PlayerCount >=4)
         {
             ReadyToStart = true;
-            Runner.SessionInfo.IsOpen = false; // ´õ ÀÌ»ó Join ºÒ°¡
-            Runner.SessionInfo.IsVisible = false; // ·Îºñ¡¤¸ÅÄ¡ ¸®½ºÆ®¿¡¼­µµ ¼û±è
+            Runner.SessionInfo.IsOpen = false; // ë” ì´ìƒ Join ë¶ˆê°€
+            Runner.SessionInfo.IsVisible = false; // ë¡œë¹„Â·ë§¤ì¹˜ ë¦¬ìŠ¤íŠ¸ì—ì„œë„ ìˆ¨ê¹€
         }
     }
  
@@ -46,7 +67,11 @@ public class Room_Mng : NetworkBehaviour
     public void RPC_SubmitNickname(string nick, int charId, RpcInfo info = default)
     {
         if (!Nicknames.ContainsKey(info.Source))
-            Nicknames.Add(info.Source, nick);
-            CharIdxArr.Add(info.Source, charId);        
+            Nicknames.Set(info.Source, new LobbyPlayerStruct
+            {
+                Nick = nick,
+                CharId = charId
+            });
+
     }
 }
