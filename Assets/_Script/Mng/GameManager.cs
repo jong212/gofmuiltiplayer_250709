@@ -24,7 +24,7 @@ public class GameManager : BaseCommonManager
 
     [SerializeField] NetworkObject[] Levels;
     [Networked] NetworkObject _currentLevelInstance { get; set; }
-
+    bool startlatency;
     private int _prevCountdown = -999;
 
     [Header("Timer")] 
@@ -40,15 +40,6 @@ public class GameManager : BaseCommonManager
     public override void Spawned()
     {
         base.Spawned();
-        InitializeGame();
-    }
-
-    private void InitializeGame()
-    {
-        if (Object.HasStateAuthority)
-        {
-        
-        }
     }
   
     #region # render
@@ -217,7 +208,7 @@ public class GameManager : BaseCommonManager
     {
         var text = InterfaceManager.instance.countText;
         if (text == null) return;
-
+        Debug.Log(text);
         text.text = val > 0 ? val.ToString() : val == 0 ? "START" : "";
 
         if (val == 0)
@@ -245,7 +236,11 @@ public class GameManager : BaseCommonManager
         {
             case GameStatus.WaitingToStart:
                 // PlayerObject가 전부 들어왔는지 확인
-                if(_currentLevelInstance == null) Runner.Spawn(Levels[CurrentRound]);
+                if(_currentLevelInstance == null && !startlatency)
+                {
+                    startlatency = true;
+                    Runner.Spawn(Levels[CurrentRound]);
+                }
                 if (AllPlayersReady())
                 {
                     Debug.Log("[GameManager] 모든 플레이어 준비됨 → 게임 시작");
@@ -340,10 +335,17 @@ public class GameManager : BaseCommonManager
 
     private void CheckForChanges()
     {
+        if (_changeDetector == null)
+        {
+            Debug.LogError("_changeDetector is NULL!");
+            return;
+        }
+
         foreach (var change in _changeDetector.DetectChanges(this, out var previousBuffer, out var currentBuffer))
         {
             if (change == nameof(AddCount))
             {
+                Debug.Log(change.ToString());
                 var reader = GetPropertyReader<int>(nameof(AddCount));
                 int before = reader.Read(previousBuffer);
                 int after = reader.Read(currentBuffer);

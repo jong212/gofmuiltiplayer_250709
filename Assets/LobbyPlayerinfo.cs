@@ -1,3 +1,4 @@
+using DG.Tweening;
 using TMPro;
 using UnityEngine;
 
@@ -28,6 +29,10 @@ public class LobbyPlayerinfo : MonoBehaviour
         rb.useGravity = true;
         rb.isKinematic = false;
 
+        instance.transform.DORotate(new Vector3(0, 360, 0), 20f, RotateMode.LocalAxisAdd)
+        .SetLoops(-1, LoopType.Incremental)
+        .SetEase(Ease.Linear);
+
     }
 
     public void ClearSlot()
@@ -35,6 +40,13 @@ public class LobbyPlayerinfo : MonoBehaviour
         PlayerRefId = null;
         NickNameText.text = "";
         CharId = -1;
+        if (PlayerSpawnPoint.childCount > 0)
+        {
+            for (int i = 0; i < PlayerSpawnPoint.childCount; i++)
+            {
+                Destroy(PlayerSpawnPoint.GetChild(i).gameObject);
+            }
+        }
     }
     void SetLayerRecursively(GameObject obj, int layer)
     {

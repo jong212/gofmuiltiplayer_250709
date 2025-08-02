@@ -10,7 +10,6 @@ public class ManagerSystem : MonoBehaviour
     public BackendMng BackendMng { get; private set; }
     public BackendChart BackendChart { get; private set; }
     public BackendCashAll BackendCash{ get; private set; }
-    public InterfaceManager UIManager { get; private set; }
     public MatchManager MatchManager { get; private set; }
 
     private void Awake()
@@ -30,12 +29,10 @@ public class ManagerSystem : MonoBehaviour
         BackendCash = GetComponentInChildren<BackendCashAll>();
 
 
-        UIManager = GetComponentInChildren<InterfaceManager>();
         MatchManager = GetComponentInChildren<MatchManager>();
     }
     private void Start()
     {
-        UIManager.Init();
         MatchManager.Init();
     }
 
@@ -79,6 +76,9 @@ public class ManagerSystem : MonoBehaviour
                 break;
             case "10_GameStartBtnClick":
                 LobbyManager.Instance.Step10();
+                break;
+            case "11_ChangeGameScene":
+                Room_Mng.instance.Step11();
                 break;
         }
     }

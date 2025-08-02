@@ -25,15 +25,20 @@ public class InterfaceManager : MonoBehaviour
 
     [Header("------ Canvases ------")]
     public Canvas mainCanvas;
-    public Canvas worldCanvas;
     public TextMeshProUGUI countText;
-    public TextMeshProUGUI coomPlayerCount;
     public Joystick _joystick;
+    public Joystick JoystickInstance;
+
     public Image ChargeCircle;
     [field: SerializeField] public Gradient PuttChargeColor { get; private set; }
-
-    public void Init()
+    
+    private void Start()
     {
-
+        if ( JoystickInstance == null)
+        {
+            JoystickInstance = Instantiate(_joystick, mainCanvas.transform);
+        }
     }
+
+
 }

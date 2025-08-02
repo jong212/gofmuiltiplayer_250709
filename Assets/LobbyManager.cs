@@ -97,12 +97,20 @@ public class LobbyManager : MonoBehaviour
     }
     void UpdateLobbyUI()
     {
- 
-        if (Room_Mng.instance == null || Room_Mng.instance.Nicknames.Count == 0)
+
+        if (Room_Mng.instance == null)
             return;
-        if (!Room_Mng.instance.Object )
+
+        var room = Room_Mng.instance;
+
+        // ✅ 네트워크 객체 Spawn 여부 먼저 체크
+        if (room.Object == null || !room.Object.IsValid)
             return;
-        var nicknames = Room_Mng.instance.Nicknames;
+
+        var nicknames = room.Nicknames; // 여기서 접근하면 안전
+        if (nicknames.Count == 0)
+            return;
+
 
         // 1. Nicknames 기준으로, 아직 세팅 안된 PlayerRef면 슬롯에 세팅
         foreach (var kv in nicknames)

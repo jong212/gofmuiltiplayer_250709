@@ -12,7 +12,7 @@ public class InputBehaviour : Fusion.Behaviour, INetworkRunnerCallbacks
 {
     public void OnInput(NetworkRunner runner, NetworkInput input)
     {
-        var joy = GameManager.instance?.JoystickInstance;
+        var joy = InterfaceManager.instance?.JoystickInstance;
         if (CameraController.Instance == null || joy == null) return;
 
         float power = Mathf.Clamp01(joy.Direction.magnitude);

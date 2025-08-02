@@ -11,7 +11,6 @@ public abstract class BaseCommonManager : NetworkBehaviour, IStateAuthorityChang
     [Networked, Capacity(6)]
     public NetworkDictionary<PlayerRef, Putter> ObjectByRef => default;
     public ChangeDetector _changeDetector;
-    public Joystick JoystickInstance;
 
 
     public override void Spawned() //NetworkBehaviour 안에 virtual로 정의되어 잇어서 override (재정의) 했고 이거 자식도 override하면됨
@@ -27,9 +26,9 @@ public abstract class BaseCommonManager : NetworkBehaviour, IStateAuthorityChang
         }
 
         // [ 조이스틱 ]
-        if (InterfaceManager.instance?.mainCanvas != null && JoystickInstance == null) 
+        if (InterfaceManager.instance?.JoystickInstance == null)
         {
-            JoystickInstance = GameObject.Instantiate(InterfaceManager.instance._joystick, InterfaceManager.instance.mainCanvas.transform);
+            return;
         }
 
         _changeDetector = GetChangeDetector(ChangeDetector.Source.SimulationState);

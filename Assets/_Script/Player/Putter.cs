@@ -146,4 +146,12 @@ public class Putter : NetworkBehaviour
 
         Instantiate(bodyPrefab, body.transform);
     }
+    private void OnCollisionEnter(Collision collision)
+    {
+        if (collision.gameObject.CompareTag("JumpPad"))
+        {
+            rb.AddForce(Vector3.up * 3f, ForceMode.VelocityChange);
+        }
+    }
+
 }
