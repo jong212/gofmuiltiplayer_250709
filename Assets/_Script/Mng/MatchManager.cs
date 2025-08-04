@@ -16,7 +16,7 @@ public class MatchManager : MonoBehaviour, INetworkRunnerCallbacks
 	public NetworkObject managerPrefab;
 	public NetworkObject roomMngPrefab;
 
- 	public NetworkRunner Runner { get; private set; } // 현재 실행 중인 Runner
+    public NetworkRunner Runner { get; private set; } // 현재 실행 중인 Runner
 
     Coroutine _joinRoutine;
     private void Awake()

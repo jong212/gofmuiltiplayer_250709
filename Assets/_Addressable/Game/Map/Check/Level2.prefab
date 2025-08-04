@@ -1,36 +1,5 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &3291344935600923687
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 2848343140856535694}
-  m_Layer: 0
-  m_Name: NetworkObstacleRoot
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!4 &2848343140856535694
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 3291344935600923687}
-  serializedVersion: 2
-  m_LocalRotation: {x: -0, y: -0.7071068, z: -0, w: 0.7071068}
-  m_LocalPosition: {x: -22.924026, y: -3.8070986, z: 3.2898579}
-  m_LocalScale: {x: 0.99999976, y: 1, z: 0.99999976}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 51165505335805255}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &6152001560352631178
 GameObject:
   m_ObjectHideFlags: 0
@@ -74,7 +43,7 @@ GameObject:
   - component: {fileID: 8254681392227529714}
   - component: {fileID: 253311928684114195}
   m_Layer: 0
-  m_Name: Level1
+  m_Name: Level2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -102,7 +71,6 @@ Transform:
   - {fileID: 5757333867414328509}
   - {fileID: 4759044487862015104}
   - {fileID: 2325662208993672338}
-  - {fileID: 2848343140856535694}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 90, z: 0}
 --- !u!114 &8254681392227529714
@@ -117,7 +85,7 @@ MonoBehaviour:
   m_Script: {fileID: -1552182283, guid: e725a070cec140c4caffb81624c8c787, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  SortKey: 306837683
+  SortKey: 1080811842
   ObjectInterest: 1
   Flags: 131073
   NestedObjects: []
@@ -494,11 +462,11 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5774825104498449956, guid: 093a236dbc8bce54eba80ecb15c1773f, type: 3}
       propertyPath: m_LocalPosition.x
-      value: -24.44
+      value: -25.07
       objectReference: {fileID: 0}
     - target: {fileID: 5774825104498449956, guid: 093a236dbc8bce54eba80ecb15c1773f, type: 3}
       propertyPath: m_LocalPosition.y
-      value: 0
+      value: 0.02
       objectReference: {fileID: 0}
     - target: {fileID: 5774825104498449956, guid: 093a236dbc8bce54eba80ecb15c1773f, type: 3}
       propertyPath: m_LocalPosition.z
@@ -506,23 +474,23 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 5774825104498449956, guid: 093a236dbc8bce54eba80ecb15c1773f, type: 3}
       propertyPath: m_LocalRotation.w
-      value: -0.7071068
+      value: -0.7054693
       objectReference: {fileID: 0}
     - target: {fileID: 5774825104498449956, guid: 093a236dbc8bce54eba80ecb15c1773f, type: 3}
       propertyPath: m_LocalRotation.x
-      value: 0
+      value: 0.048094034
       objectReference: {fileID: 0}
     - target: {fileID: 5774825104498449956, guid: 093a236dbc8bce54eba80ecb15c1773f, type: 3}
       propertyPath: m_LocalRotation.y
-      value: 0.7071068
+      value: 0.7054693
       objectReference: {fileID: 0}
     - target: {fileID: 5774825104498449956, guid: 093a236dbc8bce54eba80ecb15c1773f, type: 3}
       propertyPath: m_LocalRotation.z
-      value: -0
+      value: 0.048094034
       objectReference: {fileID: 0}
     - target: {fileID: 5774825104498449956, guid: 093a236dbc8bce54eba80ecb15c1773f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x
-      value: 0
+      value: -7.8
       objectReference: {fileID: 0}
     - target: {fileID: 5774825104498449956, guid: 093a236dbc8bce54eba80ecb15c1773f, type: 3}
       propertyPath: m_LocalEulerAnglesHint.y
@@ -793,7 +761,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 3876056854311868376, guid: b1a8ef41a9eb19e4f85c86a43f13d272, type: 3}
       propertyPath: m_LocalPosition.y
-      value: -0.52
+      value: -0.88
       objectReference: {fileID: 0}
     - target: {fileID: 3876056854311868376, guid: b1a8ef41a9eb19e4f85c86a43f13d272, type: 3}
       propertyPath: m_LocalPosition.z

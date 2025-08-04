@@ -140,6 +140,11 @@ MonoBehaviour:
     m_SerializedLabels:
     - lobbyui
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: ce497ed28c11dde45b88eca90ecaa396
+    m_Address: Assets/_Addressable/Game/Map/Check/Level2.prefab
+    m_ReadOnly: 0
+    m_SerializedLabels: []
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: cf3ab3f90daf10547b22fd83f3d5461a
     m_Address: Assets/_Addressable/LobbySprite/Check/Lobby16.png
     m_ReadOnly: 0

@@ -96,6 +96,7 @@ MonoBehaviour:
   runnerPrefab: {fileID: 2740596322902086134, guid: 0b5c6e764669761439b91ed3dfde59ab, type: 3}
   managerPrefab: {fileID: 3765628353748632056, guid: d9c58ff93dae7dc4792818b825de91b7, type: 3}
   roomMngPrefab: {fileID: 6853480736278113044, guid: 7abdf645d3e2a394ebfe0a848869b2d8, type: 3}
+  testMovingObstaclePrefab: {fileID: 4777225123754722505, guid: a897bf796c581ff41bbdd63ec0f925df, type: 3}
 --- !u!1 &5495583036084170737
 GameObject:
   m_ObjectHideFlags: 0

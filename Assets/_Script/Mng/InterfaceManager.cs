@@ -29,6 +29,9 @@ public class InterfaceManager : MonoBehaviour
     public Joystick _joystick;
     public Joystick JoystickInstance;
 
+    public Transform ScoreBoardRoot;
+    public Transform[] ScoreRows;
+
     public Image ChargeCircle;
     [field: SerializeField] public Gradient PuttChargeColor { get; private set; }
     

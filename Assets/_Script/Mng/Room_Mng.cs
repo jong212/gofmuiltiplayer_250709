@@ -59,7 +59,7 @@ public class Room_Mng : NetworkBehaviour
         }
 
         // 예: 인원이 4명 이상일 때 게임 시작 조건 만족
-        if (true ||  PlayerCount >=2)
+        if (PlayerCount >=2)
         {
             ManagerSystem.Instance.LobbySceneStepByCall("11_ChangeGameScene");
             Runner.SessionInfo.IsOpen = false; // 더 이상 Join 불가
