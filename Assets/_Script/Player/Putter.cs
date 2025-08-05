@@ -150,8 +150,17 @@ public class Putter : NetworkBehaviour
     {
         if (collision.gameObject.CompareTag("JumpPad"))
         {
-            rb.AddForce(Vector3.up * 3f, ForceMode.VelocityChange);
+            rb.AddForce(Vector3.up * 6f, ForceMode.VelocityChange);
         }
+        else if (collision.gameObject.CompareTag("Punch"))
+        {
+            SlidingObstacle punch = collision.gameObject.GetComponentInParent<SlidingObstacle>();
+            if (punch != null)
+            {
+                rb.AddForce(punch.knockDirection, ForceMode.VelocityChange);
+            }
+        }
+
     }
 
 }
