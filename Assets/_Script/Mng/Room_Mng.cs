@@ -30,11 +30,27 @@ public class Room_Mng : NetworkBehaviour
     public NetworkDictionary<PlayerRef, LobbyPlayerStruct> Nicknames => default;
 
 
+    // 🔹 게임 시작 대기용 타이머 (5초)
+    [Networked] TickTimer StartGameTimer { get; set; }
     public override void Render()
     {
-        if(LobbyManager.Instance != null) LobbyManager.Instance.playerCount.text = PlayerCount.ToString() + " / 4";
+        if (LobbyManager.Instance != null)
+        {
+            LobbyManager.Instance.playerCount.text = PlayerCount.ToString() + " / 4";
+
+            // 🔹 남은 시간 UI 표시 (옵션)
+            if (StartGameTimer.IsRunning)
+            {
+                float remain = StartGameTimer.RemainingTime(Runner) ?? 0;
+                LobbyManager.Instance.PlayerFullCountdown.text = $"{Mathf.CeilToInt(remain)}";
+            }
+            else
+            {
+                LobbyManager.Instance.PlayerFullCountdown.text = "";
+            }
+        }
     }
-    
+
     public void Step11()
     {
         ReadyToStart = true;
@@ -43,30 +59,51 @@ public class Room_Mng : NetworkBehaviour
     {
         if (!Object.HasStateAuthority) return;
 
+        // 1️⃣ 현재 인원 갱신
         PlayerCount = Runner.ActivePlayers.Count();
-        // Nicknames 정리: 세션에서 빠진 유저 제거
-        var toRemove = new List<PlayerRef>();
 
+        // 2️⃣ 세션에서 빠진 유저 정리
+        var toRemove = new List<PlayerRef>();
         foreach (var kv in Nicknames)
         {
             if (!Runner.ActivePlayers.Contains(kv.Key))
                 toRemove.Add(kv.Key);
         }
-
         foreach (var key in toRemove)
-        {
             Nicknames.Remove(key);
+
+        // 3️⃣ 게임 시작 조건 체크
+        int maxPlayers = 2; // 방 최대 인원
+
+        if (PlayerCount == maxPlayers)
+        {
+            // 타이머가 안 돌고 있으면 새로 시작
+            if (!StartGameTimer.IsRunning)
+            {
+                StartGameTimer = TickTimer.CreateFromSeconds(Runner, 5);
+                Runner.SessionInfo.IsOpen = false;   // 더 이상 Join 불가
+                Runner.SessionInfo.IsVisible = false; // 로비에서도 숨김
+            }
+        }
+        else
+        {
+            // 인원이 줄어들면 타이머 취소
+            if (StartGameTimer.IsRunning)
+            {
+                StartGameTimer = TickTimer.None;
+                Runner.SessionInfo.IsOpen = true;   // 다시 참여 가능
+                Runner.SessionInfo.IsVisible = true;
+            }
         }
 
-        // 예: 인원이 4명 이상일 때 게임 시작 조건 만족
-        if (PlayerCount >=2)
+        // 4️⃣ 타이머 만료 시 게임 시작
+        if (StartGameTimer.IsRunning && StartGameTimer.Expired(Runner))
         {
+            StartGameTimer = TickTimer.None;
             ManagerSystem.Instance.LobbySceneStepByCall("11_ChangeGameScene");
-            Runner.SessionInfo.IsOpen = false; // 더 이상 Join 불가
-            Runner.SessionInfo.IsVisible = false; // 로비·매치 리스트에서도 숨김
         }
     }
- 
+
     [Rpc(RpcSources.All, RpcTargets.StateAuthority)]
     public void RPC_SubmitNickname(string nick, int charId, RpcInfo info = default)
     {

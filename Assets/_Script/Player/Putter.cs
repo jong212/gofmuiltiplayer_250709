@@ -56,6 +56,7 @@ public class Putter : NetworkBehaviour
 
         if (CurrInput.isDragging)
         {
+            Arrow.gameObject.SetActive(true);
             ArrowMeshRenderer.material.SetColor("_EmissionColor", InterfaceManager.instance.PuttChargeColor.Evaluate(CurrInput.dragDelta));
             InterfaceManager.instance.ChargeCircle.color = InterfaceManager.instance.PuttChargeColor.Evaluate(CurrInput.dragDelta) ;
 
@@ -65,6 +66,7 @@ public class Putter : NetworkBehaviour
         }
         else
         {
+            Arrow.gameObject.SetActive(false);
             InterfaceManager.instance.ChargeCircle.gameObject.SetActive(false);
             InterfaceManager.instance.ChargeCircle.fillAmount = CurrInput.dragDelta;
             Arrow.localScale = scale;
