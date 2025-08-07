@@ -21,6 +21,13 @@ MonoBehaviour:
     m_SerializedLabels:
     - ballskin
     FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 2e25320173a851d48a62b14596bc9e49
+    m_Address: "Assets/_Addressable/Lobby/LobbyUI/Check/\uC2A4\uD06C\uB9B0\uC0F7
+      2025-08-04 220644.png"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
+    FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 483588457e5cfc343813735c5837680f
     m_Address: Player
     m_ReadOnly: 0
@@ -68,6 +75,13 @@ MonoBehaviour:
     m_ReadOnly: 0
     m_SerializedLabels:
     - ballskin
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 64aa6fe5e2e3c1c44bf6cc6ff35bd9b4
+    m_Address: "Assets/_Addressable/Lobby/LobbyUI/Check/\uC2A4\uD06C\uB9B0\uC0F7
+      2025-08-04 220643.png"
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 64feaa7b7b780fb4f92198f6fb2e1bdb
     m_Address: Assets/_Assets/Ball Pack/Prefabs/WheelBall.prefab
@@ -130,6 +144,13 @@ MonoBehaviour:
     FlaggedDuringContentUpdateRestriction: 0
   - m_GUID: 9039c9178af37894683cdf956a4f6c9b
     m_Address: Assets/_Addressable/LobbySprite/Check/Lobby7.png
+    m_ReadOnly: 0
+    m_SerializedLabels:
+    - lobbyui
+    FlaggedDuringContentUpdateRestriction: 0
+  - m_GUID: 9a07e76eb7ff7fd49a9d52a0bc4b9353
+    m_Address: "Assets/_Addressable/Lobby/LobbyUI/Check/\uC2A4\uD06C\uB9B0\uC0F7
+      2025-08-04 220645.png"
     m_ReadOnly: 0
     m_SerializedLabels:
     - lobbyui

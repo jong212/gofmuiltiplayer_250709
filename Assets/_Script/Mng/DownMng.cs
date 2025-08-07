@@ -69,7 +69,7 @@ public class DownMng : MonoBehaviour
 
     IEnumerator InitAddressable()
     {
-
+        //Caching.ClearCache();
         var init = Addressables.InitializeAsync();
         yield return init;
     }
